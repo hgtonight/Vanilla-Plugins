@@ -1,5 +1,5 @@
 $(function(){
-   /* Do some javascripts on page load! */
+   /* Copyright 2012 Zachary Doll */
    
    	function GetLatestPosts() {
 		var url = gdn.url('/plugin/latestpostlist/module');
