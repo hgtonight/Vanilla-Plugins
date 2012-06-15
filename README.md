@@ -1,4 +1,4 @@
 Bland-Blog
 ==========
 
-A blander blog plugin for Vanilla 2+. Based on &lt;a href=\"http://blog.canofsleep.com\">Dan Dumont's&lt;/a> absolutely excellent NillaBlog plugin.
+A blander blog plugin for Vanilla 2+. Based on the absolutely excellent NillaBlog plugin by Dan Dumont (http://blog.canofsleep.com/).
