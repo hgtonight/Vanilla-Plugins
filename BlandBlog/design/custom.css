@@ -1,0 +1,78 @@
+/* Blog category styles  */
+ul.Discussions li.Item.BlandBlog {
+
+}
+
+ul.DataList .BlandBlog a.Title {
+
+}
+ul.DataList .BlandBlog > div.Options {
+
+}
+
+ul.Discussions .BlandBlog div.ItemContent {
+
+}
+
+.BlandBlog .More {
+
+}
+
+.BlandBlog.Mine {
+
+}
+
+.Discussions .BlandBlog .Message {
+
+}
+
+div.DiscussionsTabs {
+	display: none;
+}
+
+.BlandBlog .RSS {
+
+}
+.BlandBlog .RSS img {
+
+}
+
+ul div.Meta span.plusone {
+
+}
+
+
+/* Blog thread styles  */
+.FirstComment .Author img {
+	display: none;
+} 
+
+ul.MessageList li.Item.FirstComment.BlandBlog {
+
+}
+
+ul.MessageList .FirstComment.BlandBlog div.Meta {
+
+}
+
+div.Tabs.HeadingTabs.FirstPage {
+
+}
+
+div.HeadingTabs div.SubTab {
+
+}
+div.HeadingTabs ul {
+
+}
+
+body.Discussion a.Bookmark {
+
+}
+
+.CommentCount {
+	display: none;
+	&.BlandBlog {
+		display: inline;
+	}
+}
