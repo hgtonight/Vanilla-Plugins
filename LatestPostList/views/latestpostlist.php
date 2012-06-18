@@ -40,6 +40,11 @@
       echo $this->Form->Label('Frequency of list refresh (in seconds)', 'Plugin.LatestPostList.Frequency');
       echo $this->Form->Textbox('Plugin.LatestPostList.Frequency');
    ?></li>
+     <li><?php
+      echo $this->Form->Label('Enter the url to the page you would like the module header to link to:', 'Plugin.LatestPostList.Link');
+      echo Wrap(Url('/', TRUE), 'strong');
+	  echo $this->Form->Textbox('Plugin.LatestPostList.Link');
+   ?></li>
 </ul>
 <?php
    echo $this->Form->Close('Save');

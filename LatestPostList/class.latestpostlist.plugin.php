@@ -86,9 +86,11 @@ class LatestPostList extends Gdn_Plugin {
 
 		// bring in the module
 		$Count = C('Plugin.LatestPostList.Count', 5);
+		$Link = C('Plugin.LatestPostList.Link', 'discussions');
 		include_once(PATH_PLUGINS.DS.'LatestPostList'.DS.'class.latestpostlist.module.php');
 		$LatestPostListModule = new LatestPostListModule($Sender);
 		$LatestPostListModule->GetData($Count);
+		$LatestPostListModule->SetLink($Link);
 		$Sender->AddModule($LatestPostListModule);
 
 		// Only add the JS file and definition if needed
@@ -104,9 +106,11 @@ class LatestPostList extends Gdn_Plugin {
 	public function Controller_module($Sender) {
 		// This just spits out the html of the module. Used for the ajax refresh
 		$Count = C('Plugin.LatestPostList.Count', 5);
+		$Link = C('Plugin.LatestPostList.Link', 'discussions');
 		include_once(PATH_PLUGINS.DS.'LatestPostList'.DS.'class.latestpostlist.module.php');
 		$LatestPostListModule = new LatestPostListModule($Sender);
 		$LatestPostListModule->GetData($Count);
+		$LatestPostListModule->SetLink($Link);
 		echo $LatestPostListModule->ToString();
 	}
    
@@ -120,7 +124,8 @@ class LatestPostList extends Gdn_Plugin {
 		$ConfigurationModel->SetField(array(
 			'Plugin.LatestPostList.Pages'	=> 'all',
 			'Plugin.LatestPostList.Frequency'	=> 120,
-			'Plugin.LatestPostList.Count'	=> 5
+			'Plugin.LatestPostList.Count'	=> 5,
+			'Plugin.LatestPostList.Link'	=> 'discussions'
 		));
 
 		// Set the model on the form.
@@ -140,6 +145,8 @@ class LatestPostList extends Gdn_Plugin {
 			$ConfigurationModel->Validation->ApplyRule('Plugin.LatestPostList.Count', 'Required');
 			$ConfigurationModel->Validation->ApplyRule('Plugin.LatestPostList.Count', 'Integer');
 
+			$ConfigurationModel->Validation->ApplyRule('Plugin.LatestPostList.Link', 'Required');
+			
 			$Saved = $Sender->Form->Save();
 			if ($Saved) {
 				$Sender->InformMessage('<span class="InformSprite Sliders"></span>'.T("Your changes have been saved."),'HasSprite');
@@ -162,6 +169,7 @@ class LatestPostList extends Gdn_Plugin {
 		SaveToConfig('Plugin.LatestPostList.Frequency', 120);
 		SaveToConfig('Plugin.LatestPostList.Count', 5);
 		SaveToConfig('Plugin.LatestPostList.Pages', "all");
+		SaveToConfig('Plugin.LatestPostList.Link', "discussions");
 	}
 
 	// fired on disable (removal)
@@ -169,6 +177,7 @@ class LatestPostList extends Gdn_Plugin {
 		RemoveFromConfig('Plugin.LatestPostList.Frequency');
 		RemoveFromConfig('Plugin.LatestPostList.Count');
 		RemoveFromConfig('Plugin.LatestPostList.Pages');
+		RemoveFromConfig('Plugin.LatestPostList.Link');
 	}
    
 }

@@ -15,6 +15,7 @@
 */
 class LatestPostListModule extends Gdn_Module {
 	protected $_LatestPosts;
+	protected $_Link = 'discussions';
 
 	public function __construct(&$Sender = '') {
 		parent::__construct($Sender);
@@ -34,6 +35,9 @@ class LatestPostListModule extends Gdn_Module {
 
 		$this->_LatestPosts = $SQL->Get();
 	}
+	public function SetLink($Link) {
+		$this->_Link = $Link;
+	}
 
 	// Put it in the panel (sidebar)
 	public function AssetTarget() {
@@ -46,7 +50,7 @@ class LatestPostListModule extends Gdn_Module {
 		ob_start();
 		?>
 			<div id="LatestPostList" class="Box">
-				<h4><?php echo T("Latest Posts"); ?></h4>
+				<h4><?php echo '<a href="'.$this->_Link.'">'.T("Latest Posts").'</a>'; ?></h4>
 				<ul class="PanelInfo">
 				<?php
 				if ($this->_LatestPosts->NumRows() > 0) {
