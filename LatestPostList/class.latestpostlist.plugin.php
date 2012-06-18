@@ -15,8 +15,8 @@
 */
 // Define the plugin:
 $PluginInfo['LatestPostList'] = array(
-   'Description' => 'Provides a list of links to the latest posts in the panel.',
-   'Version' => '1.0',
+   'Description' => 'Provides a list of links to the latest posts in the panel. Configurable and has an AJAX refresh.',
+   'Version' => '1.1',
    'RequiredApplications' => array('Vanilla' => '2.0.10'),
    'RequiredTheme' => FALSE, 
    'RequiredPlugins' => FALSE,
