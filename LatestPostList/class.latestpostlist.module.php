@@ -27,9 +27,9 @@ class LatestPostListModule extends Gdn_Module {
 				
 		// Join the user table twice, once for first post and then for latest comments
 		$SQL->Select('d.InsertUserID, d.DiscussionID, d.Name PostName, d.DateLastComment, d.LastCommentUserID, u.UserID CommenterID, u.Name CommenterName, p.UserID PosterID, p.Name PosterName')
-			->From('discussion d')
-			->Join('user u', 'u.UserID = d.LastCommentUserID', 'left')
-			->Join('user p', 'p.UserID = d.InsertUserID', 'left')
+			->From('Discussion d')
+			->Join('User u', 'u.UserID = d.LastCommentUserID', 'left')
+			->Join('User p', 'p.UserID = d.InsertUserID', 'left')
 			->OrderBy('d.DateLastComment', 'desc')
 			->Limit($Limit, 0);
 
@@ -49,15 +49,16 @@ class LatestPostListModule extends Gdn_Module {
 		$String = '';
 		ob_start();
 		?>
-			<div id="LatestPostList" class="Box">
-				<h4><?php echo '<a href="'.Url('/', TRUE).$this->_Link.'">'.T("Latest Posts").'</a>'; ?></h4>
-				<ul class="PanelInfo">
-				<?php
-				if ($this->_LatestPosts->NumRows() > 0) {
-					foreach($this->_LatestPosts->Result() as $Post) {
+		<div id="LatestPostList" class="Box">
+			<h4><?php echo '<a href="'.Url('/', TRUE).$this->_Link.'">'.T("Latest Posts").'</a>'; ?></h4>
+			<ul class="PanelInfo">
+			<?php
+			if ($this->_LatestPosts->NumRows() > 0) {
+				foreach($this->_LatestPosts->Result() as $Post) {
 				?>
-					<li>
-		 				<?php echo Anchor(Gdn_Format::Text($Post->PostName), 'discussion/'.$Post->DiscussionID.'/'.Gdn_Format::Url($Post->PostName), 'PostTitle' ); ?>
+				<li>
+					<?php echo Anchor(Gdn_Format::Text($Post->PostName), 'discussion/'.$Post->DiscussionID.'/'.Gdn_Format::Url($Post->PostName), 'PostTitle' ); ?>
+					<div class="Condensed">
 						<?php 
 						// If there is a comment, let's use that, otherwise use the original poster
 						if ($Post->CommenterName) {
@@ -66,15 +67,15 @@ class LatestPostListModule extends Gdn_Module {
 						else {
 							echo Anchor(Gdn_Format::Text($Post->PosterName), 'profile/'.$Post->InsertUserID.'/'.Gdn_Format::Url($Post->PosterName), 'PostAuthor' );
 						}
-							?> <span class="PostDate">on 
-		 				<?php echo Gdn_Format::Date($Post->DateLastComment); ?>
-						</span>
-					</li>
+						?>
+						<span class="PostDate">on <?php echo Gdn_Format::Date($Post->DateLastComment); ?></span>
+					</div>
+				</li>
 				<?php
-					}
 				}
-				?>
-			</ul>
+			}
+			?>
+			</dl>
 		</div>
 		<?php
 		$String = ob_get_contents();
