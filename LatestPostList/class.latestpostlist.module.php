@@ -22,18 +22,9 @@ class LatestPostListModule extends Gdn_Module {
 	}
 
 	// This actually sets the data since it doesn't return anything
-	public function GetData($Limit = 10) {
-		$SQL = Gdn::SQL();
-				
-		// Join the user table twice, once for first post and then for latest comments
-		$SQL->Select('d.InsertUserID, d.DiscussionID, d.Name PostName, d.DateLastComment, d.LastCommentUserID, u.UserID CommenterID, u.Name CommenterName, p.UserID PosterID, p.Name PosterName')
-			->From('Discussion d')
-			->Join('User u', 'u.UserID = d.LastCommentUserID', 'left')
-			->Join('User p', 'p.UserID = d.InsertUserID', 'left')
-			->OrderBy('d.DateLastComment', 'desc')
-			->Limit($Limit, 0);
-
-		$this->_LatestPosts = $SQL->Get();
+	public function SetData($Limit = 10) {
+		$DiscussionModel = new DiscussionModel();
+		$this->_LatestPosts = $DiscussionModel->Get(0, $Limit);
 	}
 	public function SetLink($Link) {
 		$this->_Link = $Link;
@@ -57,15 +48,15 @@ class LatestPostListModule extends Gdn_Module {
 				foreach($this->_LatestPosts->Result() as $Post) {
 				?>
 				<li>
-					<?php echo Anchor(Gdn_Format::Text($Post->PostName), 'discussion/'.$Post->DiscussionID.'/'.Gdn_Format::Url($Post->PostName), 'PostTitle' ); ?>
+					<?php echo Anchor(Gdn_Format::Text($Post->Name), 'discussion/'.$Post->DiscussionID.'/'.Gdn_Format::Url($Post->Name), 'PostTitle' ); ?>
 					<div class="Condensed">
 						<?php 
 						// If there is a comment, let's use that, otherwise use the original poster
-						if ($Post->CommenterName) {
-							echo Anchor(Gdn_Format::Text($Post->CommenterName), 'profile/'.$Post->LastCommentUserID.'/'.Gdn_Format::Url($Post->CommenterName), 'PostAuthor' );
+						if ($Post->LastName) {
+							echo Anchor(Gdn_Format::Text($Post->LastName), 'profile/'.$Post->UpdateUserID.'/'.Gdn_Format::Url($Post->LastName), 'PostAuthor' );
 						}
 						else {
-							echo Anchor(Gdn_Format::Text($Post->PosterName), 'profile/'.$Post->InsertUserID.'/'.Gdn_Format::Url($Post->PosterName), 'PostAuthor' );
+							echo Anchor(Gdn_Format::Text($Post->FirstName), 'profile/'.$Post->InsertUserID.'/'.Gdn_Format::Url($Post->FirstName), 'PostAuthor' );
 						}
 						?>
 						<span class="PostDate">on <?php echo Gdn_Format::Date($Post->DateLastComment); ?></span>

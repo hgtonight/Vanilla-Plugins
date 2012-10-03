@@ -16,7 +16,7 @@
 // Define the plugin:
 $PluginInfo['LatestPostList'] = array(
    'Description' => 'Provides a list of links to the latest posts in the panel. Configurable and has an AJAX refresh.',
-   'Version' => '1.1.1',
+   'Version' => '1.2',
    'RequiredApplications' => array('Vanilla' => '2.0.10'),
    'RequiredTheme' => FALSE, 
    'RequiredPlugins' => FALSE,
@@ -89,7 +89,7 @@ class LatestPostList extends Gdn_Plugin {
 		$Link = C('Plugin.LatestPostList.Link', 'discussions');
 		include_once(PATH_PLUGINS.DS.'LatestPostList'.DS.'class.latestpostlist.module.php');
 		$LatestPostListModule = new LatestPostListModule($Sender);
-		$LatestPostListModule->GetData($Count);
+		$LatestPostListModule->SetData($Count);
 		$LatestPostListModule->SetLink($Link);
 		$Sender->AddModule($LatestPostListModule);
 
@@ -109,7 +109,7 @@ class LatestPostList extends Gdn_Plugin {
 		$Link = C('Plugin.LatestPostList.Link', 'discussions');
 		include_once(PATH_PLUGINS.DS.'LatestPostList'.DS.'class.latestpostlist.module.php');
 		$LatestPostListModule = new LatestPostListModule($Sender);
-		$LatestPostListModule->GetData($Count);
+		$LatestPostListModule->SetData($Count);
 		$LatestPostListModule->SetLink($Link);
 		echo $LatestPostListModule->ToString();
 	}
