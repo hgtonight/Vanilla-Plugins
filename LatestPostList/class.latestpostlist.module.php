@@ -47,7 +47,7 @@ class LatestPostListModule extends Gdn_Module {
 			if ($this->_LatestPosts->NumRows() > 0) {
 				foreach($this->_LatestPosts->Result() as $Post) {
 				?>
-				<li>
+				<li<?php if ($Post->CountUnreadComments > 0) { echo ' class="New"';}?>>
 					<?php echo Anchor(Gdn_Format::Text($Post->Name), 'discussion/'.$Post->DiscussionID.'/'.Gdn_Format::Url($Post->Name), 'PostTitle' ); ?>
 					<div class="Condensed">
 						<?php 
