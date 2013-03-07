@@ -16,7 +16,7 @@
 // Define the plugin:
 $PluginInfo['LatestPostList'] = array(
    'Description' => 'Lists the latest posts in the panel. Respects permissions, has an AJAX refresh, and is configurable.',
-   'Version' => '1.3',
+   'Version' => '1.4',
    'RequiredApplications' => array('Vanilla' => '2.0.10'),
    'RequiredTheme' => FALSE, 
    'RequiredPlugins' => FALSE,
@@ -51,7 +51,7 @@ class LatestPostList extends Gdn_Plugin {
 	//This is a common hook that fires for all controllers on the Render method
 	public function Base_Render_Before($Sender) {
 		// Get the config and controller name for comparison
-		$Pages = C('Plugin.LatestPostList.Pages', 'all');
+		$Pages = C('Plugins.LatestPostList.Pages', 'all');
 		$Controller = $Sender->ControllerName;
 		
 		// Enumerate what preference relates to which controller
@@ -85,8 +85,8 @@ class LatestPostList extends Gdn_Plugin {
 		if (!InArrayI($Controller, $ShowOnController)) return; 
 
 		// bring in the module
-		$Count = C('Plugin.LatestPostList.Count', 5);
-		$Link = C('Plugin.LatestPostList.Link', 'discussions');
+		$Count = C('Plugins.LatestPostList.Count', 5);
+		$Link = C('Plugins.LatestPostList.Link', 'discussions');
 		include_once(PATH_PLUGINS.DS.'LatestPostList'.DS.'class.latestpostlist.module.php');
 		$LatestPostListModule = new LatestPostListModule($Sender);
 		$LatestPostListModule->SetData($Count);
@@ -94,7 +94,7 @@ class LatestPostList extends Gdn_Plugin {
 		$Sender->AddModule($LatestPostListModule);
 
 		// Only add the JS file and definition if needed
-		$Frequency = C('Plugin.LatestPostList.Frequency', 30);
+		$Frequency = C('Plugins.LatestPostList.Frequency', 30);
 		if($Frequency > 0) {
 			// JS to update the list through ajax
 			$Sender->AddJsFile($this->GetResource('js/latestpostlist.js', FALSE, FALSE));
@@ -105,8 +105,8 @@ class LatestPostList extends Gdn_Plugin {
 	
 	public function Controller_module($Sender) {
 		// This just spits out the html of the module. Used for the ajax refresh
-		$Count = C('Plugin.LatestPostList.Count', 5);
-		$Link = C('Plugin.LatestPostList.Link', 'discussions');
+		$Count = C('Plugins.LatestPostList.Count', 5);
+		$Link = C('Plugins.LatestPostList.Link', 'discussions');
 		include_once(PATH_PLUGINS.DS.'LatestPostList'.DS.'class.latestpostlist.module.php');
 		$LatestPostListModule = new LatestPostListModule($Sender);
 		$LatestPostListModule->SetData($Count);
@@ -122,10 +122,10 @@ class LatestPostList extends Gdn_Plugin {
 		$Validation = new Gdn_Validation();
 		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
 		$ConfigurationModel->SetField(array(
-			'Plugin.LatestPostList.Pages'	=> 'all',
-			'Plugin.LatestPostList.Frequency'	=> 120,
-			'Plugin.LatestPostList.Count'	=> 5,
-			'Plugin.LatestPostList.Link'	=> 'discussions'
+			'Plugins.LatestPostList.Pages'	=> 'all',
+			'Plugins.LatestPostList.Frequency'	=> 120,
+			'Plugins.LatestPostList.Count'	=> 5,
+			'Plugins.LatestPostList.Link'	=> 'discussions'
 		));
 
 		// Set the model on the form.
@@ -137,15 +137,15 @@ class LatestPostList extends Gdn_Plugin {
 			$Sender->Form->SetData($ConfigurationModel->Data);
 		}
 		else {
-			$ConfigurationModel->Validation->ApplyRule('Plugin.LatestPostList.Pages', 'Required');
+			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Pages', 'Required');
 
-			$ConfigurationModel->Validation->ApplyRule('Plugin.LatestPostList.Frequency', 'Required');
-			$ConfigurationModel->Validation->ApplyRule('Plugin.LatestPostList.Frequency', 'Integer');
+			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Frequency', 'Required');
+			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Frequency', 'Integer');
 
-			$ConfigurationModel->Validation->ApplyRule('Plugin.LatestPostList.Count', 'Required');
-			$ConfigurationModel->Validation->ApplyRule('Plugin.LatestPostList.Count', 'Integer');
+			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Count', 'Required');
+			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Count', 'Integer');
 
-			$ConfigurationModel->Validation->ApplyRule('Plugin.LatestPostList.Link', 'Required');
+			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Link', 'Required');
 			
 			$Saved = $Sender->Form->Save();
 			if ($Saved) {
@@ -166,18 +166,18 @@ class LatestPostList extends Gdn_Plugin {
 	// fired on install (once)
 	public function Setup() {
 		// Set up the plugin's default values
-		SaveToConfig('Plugin.LatestPostList.Frequency', 120);
-		SaveToConfig('Plugin.LatestPostList.Count', 5);
-		SaveToConfig('Plugin.LatestPostList.Pages', "all");
-		SaveToConfig('Plugin.LatestPostList.Link', "discussions");
+		SaveToConfig('Plugins.LatestPostList.Frequency', 120);
+		SaveToConfig('Plugins.LatestPostList.Count', 5);
+		SaveToConfig('Plugins.LatestPostList.Pages', "all");
+		SaveToConfig('Plugins.LatestPostList.Link', "discussions");
 	}
 
 	// fired on disable (removal)
 	public function OnDisable() {
-		RemoveFromConfig('Plugin.LatestPostList.Frequency');
-		RemoveFromConfig('Plugin.LatestPostList.Count');
-		RemoveFromConfig('Plugin.LatestPostList.Pages');
-		RemoveFromConfig('Plugin.LatestPostList.Link');
+		RemoveFromConfig('Plugins.LatestPostList.Frequency');
+		RemoveFromConfig('Plugins.LatestPostList.Count');
+		RemoveFromConfig('Plugins.LatestPostList.Pages');
+		RemoveFromConfig('Plugins.LatestPostList.Link');
 	}
    
 }

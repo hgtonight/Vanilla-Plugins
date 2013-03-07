@@ -25,25 +25,25 @@
 ?>
 <ul>
    <li><?php
-      echo $this->Form->Label('Number of posts', 'Plugin.LatestPostList.Count');
-      echo $this->Form->Textbox('Plugin.LatestPostList.Count');
+      echo $this->Form->Label('Number of posts', 'Plugins.LatestPostList.Count');
+      echo $this->Form->Textbox('Plugins.LatestPostList.Count');
    ?></li>
    <li><?php
-      echo $this->Form->Label('Display on which pages?', 'Plugin.LatestPostList.Pages');
-      echo $this->Form->DropDown('Plugin.LatestPostList.Pages',array(
+      echo $this->Form->Label('Display on which pages?', 'Plugins.LatestPostList.Pages');
+      echo $this->Form->DropDown('Plugins.LatestPostList.Pages',array(
          'all'             => 'Discussions & Announcements',
          'announcements'   => 'Just Announcements',
          'discussions'     => 'Just Discussions'
       ));
    ?></li>
    <li><?php
-      echo $this->Form->Label('Frequency of list refresh (in seconds)', 'Plugin.LatestPostList.Frequency');
-      echo $this->Form->Textbox('Plugin.LatestPostList.Frequency');
+      echo $this->Form->Label('Frequency of list refresh (in seconds)', 'Plugins.LatestPostList.Frequency');
+      echo $this->Form->Textbox('Plugins.LatestPostList.Frequency');
    ?></li>
      <li><?php
-      echo $this->Form->Label('Enter the url to the page you would like the module header to link to:', 'Plugin.LatestPostList.Link');
+      echo $this->Form->Label('Enter the url to the page you would like the module header to link to:', 'Plugins.LatestPostList.Link');
       echo Wrap(Url('/', TRUE), 'strong');
-	  echo $this->Form->Textbox('Plugin.LatestPostList.Link');
+	  echo $this->Form->Textbox('Plugins.LatestPostList.Link');
    ?></li>
 </ul>
 <?php

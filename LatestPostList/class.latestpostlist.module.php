@@ -37,40 +37,44 @@ class LatestPostListModule extends Gdn_Module {
 
 	// Actual output string
 	public function ToString() {
+		$Posts = $this->_LatestPosts->Result();
 		$String = '';
-		ob_start();
-		?>
-		<div id="LatestPostList" class="Box">
-			<h4><?php echo '<a href="'.Url('/', TRUE).$this->_Link.'">'.T("Latest Posts").'</a>'; ?></h4>
-			<ul class="PanelInfo">
-			<?php
-			if ($this->_LatestPosts->NumRows() > 0) {
-				foreach($this->_LatestPosts->Result() as $Post) {
-				?>
-				<li<?php if ($Post->CountUnreadComments > 0) { echo ' class="New"';}?>>
-					<?php echo Anchor(Gdn_Format::Text($Post->Name), 'discussion/'.$Post->DiscussionID.'/'.Gdn_Format::Url($Post->Name), 'PostTitle' ); ?>
-					<div class="Condensed">
-						<?php 
-						// If there is a comment, let's use that, otherwise use the original poster
-						if ($Post->LastName) {
-							echo Anchor(Gdn_Format::Text($Post->LastName), 'profile/'.$Post->UpdateUserID.'/'.Gdn_Format::Url($Post->LastName), 'PostAuthor' );
-						}
-						else {
-							echo Anchor(Gdn_Format::Text($Post->FirstName), 'profile/'.$Post->InsertUserID.'/'.Gdn_Format::Url($Post->FirstName), 'PostAuthor' );
-						}
-						?>
-						<span class="PostDate">on <?php echo Gdn_Format::Date($Post->DateLastComment); ?></span>
-					</div>
-				</li>
-				<?php
-				}
-			}
+		if(!empty($Posts)) {
+			ob_start();
 			?>
-			</dl>
-		</div>
-		<?php
-		$String = ob_get_contents();
-		@ob_end_clean();
+			<div id="LatestPostList" class="Box">
+				<h4><?php echo '<a href="'.Url('/', TRUE).$this->_Link.'">'.T("Latest Posts").'</a>'; ?></h4>
+				<ul class="PanelInfo">
+				<?php
+				if ($this->_LatestPosts->NumRows() > 0) {
+					foreach($Posts as $Post) {
+					?>
+					<li<?php if ($Post->CountUnreadComments > 0) { echo ' class="New"';}?>>
+						<?php echo Anchor(Gdn_Format::Text($Post->Name), 'discussion/'.$Post->DiscussionID.'/'.Gdn_Format::Url($Post->Name), 'PostTitle' ); ?>
+						<div class="Condensed">
+							<?php 
+							// If there is a comment, let's use that, otherwise use the original poster
+							if ($Post->LastName) {
+								echo Anchor(Gdn_Format::Text($Post->LastName), 'profile/'.$Post->UpdateUserID.'/'.Gdn_Format::Url($Post->LastName), 'PostAuthor' );
+							}
+							else {
+								echo Anchor(Gdn_Format::Text($Post->FirstName), 'profile/'.$Post->InsertUserID.'/'.Gdn_Format::Url($Post->FirstName), 'PostAuthor' );
+							}
+							?>
+							<span class="PostDate">on <?php echo Gdn_Format::Date($Post->DateLastComment); ?></span>
+						</div>
+					</li>
+					<?php
+					}
+				}
+				?>
+				</ul>
+			</div>
+			<?php
+			$String = ob_get_contents();
+			@ob_end_clean();
+			return $String;
+		}
 		return $String;
 	}
 }
