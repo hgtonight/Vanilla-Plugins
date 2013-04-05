@@ -1,5 +1,5 @@
 <?php if (!defined('APPLICATION')) exit();
-/*	Copyright 2012 Zachary Doll
+/*	Copyright 2013 Zachary Doll
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
 *	the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
 // Define the plugin:
 $PluginInfo['LatestPostList'] = array(
    'Description' => 'Lists the latest posts in the panel. Respects permissions, has an AJAX refresh, and is configurable.',
-   'Version' => '1.4',
+   'Version' => '1.5',
    'RequiredApplications' => array('Vanilla' => '2.0.10'),
    'RequiredTheme' => FALSE, 
    'RequiredPlugins' => FALSE,
@@ -33,18 +33,27 @@ class LatestPostList extends Gdn_Plugin {
 
 	// runs once every page load
 	public function __construct() {
-	  
+		parent::__construct();
 	}
 	
-	// Create a method called "LatestPostList" on the PluginController
-   public function PluginController_LatestPostList_Create($Sender) {
+	// DRYing this code up made me make this
+	// returns a module object loaded and ready to go
+	private function LoadLPLModule($Sender) {
+		$Count = C('Plugins.LatestPostList.Count', 5);
+		$Link = C('Plugins.LatestPostList.Link', 'discussions');
+		include_once(PATH_PLUGINS.DS.'LatestPostList'.DS.'class.latestpostlist.module.php');
+		$LatestPostListModule = new LatestPostListModule($Sender);
+		$LatestPostListModule->SetData($Count, $Link);
+		return $LatestPostListModule;
+	}
+	
+	// Creates a method called "LatestPostList" on the PluginController that acts like a controller
+	public function PluginController_LatestPostList_Create($Sender) {
 		$Sender->Title('Latest Post List Plugin');
 		$Sender->AddSideMenu('plugin/latestpostlist');
 
 		// get sub-pages forms ready
 		$Sender->Form = new Gdn_Form();
-
-		// needed for a "fake" controller
 		$this->Dispatch($Sender, $Sender->RequestArgs);
 	}
    
@@ -54,8 +63,7 @@ class LatestPostList extends Gdn_Plugin {
 		$Pages = C('Plugins.LatestPostList.Pages', 'all');
 		$Controller = $Sender->ControllerName;
 		
-		// Enumerate what preference relates to which controller
-		$ShowOnController = array();		
+		// Enumerate what preference relates to which controller	
 		switch($Pages) {
 			case 'announcements':
 				$ShowOnController = array(
@@ -82,39 +90,35 @@ class LatestPostList extends Gdn_Plugin {
 				break;				
 		}
 		// leave if we aren't in an approved controller
-		if (!InArrayI($Controller, $ShowOnController)) return; 
+		if (!InArrayI($Controller, $ShowOnController)) {
+			return;
+		}
 
-		// bring in the module
-		$Count = C('Plugins.LatestPostList.Count', 5);
-		$Link = C('Plugins.LatestPostList.Link', 'discussions');
-		include_once(PATH_PLUGINS.DS.'LatestPostList'.DS.'class.latestpostlist.module.php');
-		$LatestPostListModule = new LatestPostListModule($Sender);
-		$LatestPostListModule->SetData($Count);
-		$LatestPostListModule->SetLink($Link);
-		$Sender->AddModule($LatestPostListModule);
+		// bring in the module into this controller
+		$Module = $this->LoadLPLModule($Sender);
+		$Sender->AddModule($Module);
 
 		// Only add the JS file and definition if needed
-		$Frequency = C('Plugins.LatestPostList.Frequency', 30);
+		$Frequency = C('Plugins.LatestPostList.Frequency', 120);
 		if($Frequency > 0) {
-			// JS to update the list through ajax
+			// ajax refresh js
 			$Sender->AddJsFile($this->GetResource('js/latestpostlist.js', FALSE, FALSE));
-			// put the frequency someplace the js can access it
+			// lets js access data with gdn.definition('LatestPostListFrequency')
 			$Sender->AddDefinition('LatestPostListFrequency', $Frequency);
+			$Sender->AddDefinition('LatestPostListLastDate', $Module->GetDate());
+			$Sender->AddDefinition('LatestPostListEffects', C('Plugins.LatestPostList.Effects', 'none'));
 		}
 	}
 	
-	public function Controller_module($Sender) {
-		// This just spits out the html of the module. Used for the ajax refresh
-		$Count = C('Plugins.LatestPostList.Count', 5);
-		$Link = C('Plugins.LatestPostList.Link', 'discussions');
-		include_once(PATH_PLUGINS.DS.'LatestPostList'.DS.'class.latestpostlist.module.php');
-		$LatestPostListModule = new LatestPostListModule($Sender);
-		$LatestPostListModule->SetData($Count);
-		$LatestPostListModule->SetLink($Link);
-		echo $LatestPostListModule->ToString();
+	// Used to make the ajax refresh intelligent
+	// This gets the latest post date, the latest post list and returns it as json object
+	public function Controller_getnewlist($Sender) {
+		$LPL = $this->LoadLPLModule($Sender);
+		$Data = array( 'date' => $LPL->GetDate(), 'list' => $LPL->PostList() );
+		echo json_encode($Data);
 	}
    
-	// index is a good place for an admin page (plugin/latestpostlist)
+	// Treat our mini-controller as a settings page (plugin/latestpostlist)
 	public function Controller_Index($Sender) {
 		// Admins only
 		$Sender->Permission('Vanilla.Settings.Manage');
@@ -125,7 +129,8 @@ class LatestPostList extends Gdn_Plugin {
 			'Plugins.LatestPostList.Pages'	=> 'all',
 			'Plugins.LatestPostList.Frequency'	=> 120,
 			'Plugins.LatestPostList.Count'	=> 5,
-			'Plugins.LatestPostList.Link'	=> 'discussions'
+			'Plugins.LatestPostList.Link'	=> 'discussions',
+			'Plugins.LatestPostList.Effects' => 'none'
 		));
 
 		// Set the model on the form.
@@ -147,14 +152,18 @@ class LatestPostList extends Gdn_Plugin {
 
 			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Link', 'Required');
 			
+			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Effects', 'Required');
+			
 			$Saved = $Sender->Form->Save();
 			if ($Saved) {
 				$Sender->InformMessage('<span class="InformSprite Sliders"></span>'.T("Your changes have been saved."),'HasSprite');
 			}
 		}
 		
+		// Add the javascript needed for a live preview
+		$Sender->AddJsFile($this->GetResource('js/preview.js', FALSE, FALSE));
 		// Render the settings view
-		$Sender->Render($this->GetView('latestpostlist.php'));
+		$Sender->Render($this->GetView('settings.php'));
 	}
    
 	//Add a link to the dashboard menu
@@ -167,6 +176,7 @@ class LatestPostList extends Gdn_Plugin {
 	public function Setup() {
 		// Set up the plugin's default values
 		SaveToConfig('Plugins.LatestPostList.Frequency', 120);
+		SaveToConfig('Plugins.LatestPostList.Effects', 'none');
 		SaveToConfig('Plugins.LatestPostList.Count', 5);
 		SaveToConfig('Plugins.LatestPostList.Pages', "all");
 		SaveToConfig('Plugins.LatestPostList.Link', "discussions");
@@ -175,6 +185,7 @@ class LatestPostList extends Gdn_Plugin {
 	// fired on disable (removal)
 	public function OnDisable() {
 		RemoveFromConfig('Plugins.LatestPostList.Frequency');
+		RemoveFromConfig('Plugins.LatestPostList.Effects');
 		RemoveFromConfig('Plugins.LatestPostList.Count');
 		RemoveFromConfig('Plugins.LatestPostList.Pages');
 		RemoveFromConfig('Plugins.LatestPostList.Link');
