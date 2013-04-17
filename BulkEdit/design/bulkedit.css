@@ -1,0 +1,13 @@
+#BulkEditAction:hover {
+	background: none repeat scroll 0% 0% rgb(249, 244, 192);
+	text-decoration: none;
+	color: rgb(51, 51, 51) !important;
+}
+#BulkEditDropDown {
+	position: absolute;
+	right: 10px;
+}
+
+.FilterMenu {
+	overflow: hidden;
+}
