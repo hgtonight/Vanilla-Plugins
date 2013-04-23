@@ -1,7 +1,7 @@
 Category Images
 ===============
 
-A Vanilla Forums plugin that provides a specific category icon an icon in the discussions and category view. A special thanks to digihub for the idea.
+A Vanilla Forums plugin that provides a specific category icon. A special thanks to digihub for the idea.
 
 It is released under the GPLv3 and may be released under a different license with permission.
 
