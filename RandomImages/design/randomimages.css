@@ -1,0 +1,10 @@
+#RandomImageList {
+	display: inline-block;
+	float: left;
+	width: 170px;
+	margin-left: -180px;
+}
+
+#RandomImageList img {
+	width: 170px;
+}
