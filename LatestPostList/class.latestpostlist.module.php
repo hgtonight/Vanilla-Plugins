@@ -58,7 +58,7 @@ class LatestPostListModule extends Gdn_Module {
 				}
 				
 				$PostData = Wrap(T('on ').Gdn_Format::Date($Post->DateLastComment), 'span', array('class' => 'PostDate'));
-				$Posts .= Wrap($PostTitle.Wrap($LastPoster.$PostData, 'div', array( 'class' => 'Condensed') ), 'li', array( 'class' => ($Post->CountUnreadComments > 0) ? 'New' : '') );
+				$Posts .= Wrap($PostTitle.Wrap($LastPoster.' '.$PostData, 'div', array( 'class' => 'Condensed') ), 'li', array( 'class' => ($Post->CountUnreadComments > 0) ? 'New' : '') );
 			}
 		}
 		return $Posts;
