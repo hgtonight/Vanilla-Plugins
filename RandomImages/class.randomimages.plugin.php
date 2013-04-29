@@ -42,7 +42,8 @@ class RandomImagesPlugin extends Gdn_Plugin {
 	
 	public function CategoriesController_BeforeRenderAsset_Handler($Sender) {
 		if($Sender->EventArguments['AssetName'] == 'Content') {
-			//$this->_RenderImageList($Sender);
+			$Discussions = $Sender->Data['Discussions'];
+			$this->_RenderImageList($Discussions);
 		}
 	}
 	
@@ -59,6 +60,11 @@ class RandomImagesPlugin extends Gdn_Plugin {
 	}
 	
 	private function _RenderImageList($DiscussionModel) {
+		if(!method_exists($DiscussionModel, 'Result') ) {
+			// Fail gracefully if a discussion model object was passed
+			return FALSE;
+		}
+		
 		$ImageList = '';
 		$ImageCount = 0;
 		
@@ -78,6 +84,9 @@ class RandomImagesPlugin extends Gdn_Plugin {
 				echo Wrap($ImageList, 'ul', array('id' => 'RandomImageList'));
 				break;
 			}
+		}
+		if($ImageCount < C('Plugins.RandomImage.MaxLength', 10) ) {
+			echo Wrap($ImageList, 'ul', array('id' => 'RandomImageList'));
 		}
 	}
 	
