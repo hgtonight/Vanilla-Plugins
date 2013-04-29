@@ -20,13 +20,13 @@ $PluginInfo['RandomImages'] = array(
 	'RequiredPlugins' => FALSE,
 	'MobileFriendly' => TRUE,
 	'HasLocale' => TRUE,
-	'Version' => '0.1',
+	'Version' => '0.2',
 	'Author' => 'Zachary Doll',
 	'AuthorEmail' => 'Zachary.Doll@gmail.com',
 	'AuthorUrl' => 'http://www.daklutz.com/',
 );
 
-class CategoryImagesPlugin extends Gdn_Plugin {
+class RandomImagesPlugin extends Gdn_Plugin {
 
 	public function __construct()
 	{
@@ -35,13 +35,14 @@ class CategoryImagesPlugin extends Gdn_Plugin {
 
 	public function DiscussionsController_BeforeRenderAsset_Handler($Sender) {
 		if($Sender->EventArguments['AssetName'] == 'Content') {
-			$this->_RenderImageList($Sender);
+			$Discussions = $Sender->Data['Discussions'];
+			$this->_RenderImageList($Discussions);
 		}
 	}
 	
 	public function CategoriesController_BeforeRenderAsset_Handler($Sender) {
 		if($Sender->EventArguments['AssetName'] == 'Content') {
-			$this->_RenderImageList($Sender);
+			//$this->_RenderImageList($Sender);
 		}
 	}
 	
@@ -57,11 +58,10 @@ class CategoryImagesPlugin extends Gdn_Plugin {
 		parent::Setup();
 	}
 	
-	private function _RenderImageList($Sender) {
+	private function _RenderImageList($DiscussionModel) {
 		$ImageList = '';
 		$ImageCount = 0;
 		
-		$DiscussionModel = $Sender->Data['Discussions'];
 		foreach($DiscussionModel->Result() as $Discussion) {
 			preg_match('#\<img.+?src="([^"]*).+?\>|\[img\]([^\[]*)\[\/img\]#s', $Discussion->Body, $ImageSrcs);
 			if ($ImageSrcs[1]) {
