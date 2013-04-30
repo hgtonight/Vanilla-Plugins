@@ -20,7 +20,7 @@ $PluginInfo['RandomImages'] = array(
 	'RequiredPlugins' => FALSE,
 	'MobileFriendly' => TRUE,
 	'HasLocale' => TRUE,
-	'Version' => '0.2',
+	'Version' => '0.3',
 	'Author' => 'Zachary Doll',
 	'AuthorEmail' => 'Zachary.Doll@gmail.com',
 	'AuthorUrl' => 'http://www.daklutz.com/',
@@ -71,12 +71,12 @@ class RandomImagesPlugin extends Gdn_Plugin {
 		foreach($DiscussionModel->Result() as $Discussion) {
 			preg_match('#\<img.+?src="([^"]*).+?\>|\[img\]([^\[]*)\[\/img\]#s', $Discussion->Body, $ImageSrcs);
 			if ($ImageSrcs[1]) {
-				$ImageList .= Wrap(Img($ImageSrcs[1], array('class' => 'RandomImage')),
+				$ImageList .= Wrap(Anchor(Img($ImageSrcs[1], array('class' => 'RandomImage')), $Discussion->Url),
 				'li');
 				$ImageCount++;
 			}
 			else if($ImageSrcs[2]) {
-				$ImageList .= Wrap(Img($ImageSrcs[2], array('class' => 'RandomImage')),
+				$ImageList .= Wrap(Anchor(Img($ImageSrcs[2], array('class' => 'RandomImage')), $Discussion->Url),
 				'li');
 				$ImageCount++;
 			}
