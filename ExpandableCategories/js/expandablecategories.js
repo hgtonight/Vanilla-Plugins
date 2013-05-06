@@ -9,6 +9,7 @@ jQuery(document).ready(function($){
 	$('ul.PanelCategories li.Leader').click(function(event) {	
 		if($(this).next().is('li.Depth2')) {
 			event.preventDefault();
+			event.stopPropagation();
 			$(this).toggleClass('Expanded');
 			$(this).nextUntil('li.Leader, li.Depth1').slideToggle();
 		}
