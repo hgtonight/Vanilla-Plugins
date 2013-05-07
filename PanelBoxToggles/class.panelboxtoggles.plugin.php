@@ -17,7 +17,7 @@
 $PluginInfo['PanelBoxToggles'] = array(
 	'Name' => 'Panel Box Toggles',
 	'Description' => 'Turns the all boxes in the panel into a toggleable box.',
-	'Version' => '1.0',
+	'Version' => '1.1',
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'Author' => "Zachary Doll",
 	'AuthorEmail' => 'hgtonight@gmail.com',

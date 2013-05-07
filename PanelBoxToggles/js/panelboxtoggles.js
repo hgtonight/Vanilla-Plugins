@@ -1,6 +1,6 @@
 jQuery(document).ready(function($){
 	// Find all panel boxes
-	$('#Panel .Box').addClass('PanelBoxToggle');
+	$('#Panel .Box:not(.Group)').addClass('PanelBoxToggle');
 	
 	// Add click handler and trigger it
 	$('.PanelBoxToggle').click(function(event) {	
