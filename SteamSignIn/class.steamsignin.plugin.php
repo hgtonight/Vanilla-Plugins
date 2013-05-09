@@ -11,13 +11,12 @@ Contact Vanilla Forums Inc. at support [at] vanillaforums [dot] com
 // Define the plugin:
 $PluginInfo['SteamSignIn'] = array(
 	'Name' => 'Steam Sign In',
-   'Description' => 'This plugin allows users to sign in with their Steam™ accounts. Based on Google Sign In by Todd Burry (todd@vanillaforums.com) and Powered by Steam (http://steampowered.com) <b>Make sure you click Settings after enabling this plugin to enable Steam™ signin</b>.',
+   'Description' => 'This plugin allows users to sign in with their Steam™ accounts. Based on Google Sign In by Todd Burry (todd@vanillaforums.com) and Powered by Steam (http://steampowered.com).',
    'Version' => '1.0',
    'RequiredApplications' => array('Vanilla' => '2.0.14'),
    'RequiredPlugins' => array('OpenID' => '0.1a'),
    'RequiredTheme' => FALSE,
    'MobileFriendly' => TRUE,
-   'SettingsUrl' => '/dashboard/plugin/steamsignin',
    'SettingsPermission' => 'Garden.Settings.Manage',
    'HasLocale' => TRUE,
    'RegisterPermissions' => FALSE,
@@ -46,18 +45,6 @@ class SteamSignInPlugin extends Gdn_Plugin {
       return $Result;
    }
    
-   /**
-    * Act as a mini dispatcher for API requests to the plugin app
-    */
-   public function PluginController_SteamSignIn_Create(&$Sender) {
-      $Sender->Permission('Garden.Settings.Manage');
-		$this->Dispatch($Sender, $Sender->RequestArgs);
-   }
-   
-   public function Controller_Toggle($Sender) {
-      $this->AutoToggle($Sender);
-   }
-   
    public function AuthenticationController_Render_Before($Sender, $Args) {
       if (isset($Sender->ChooserList)) {
          $Sender->ChooserList['steamsignin'] = 'Steam';
@@ -76,7 +63,6 @@ class SteamSignInPlugin extends Gdn_Plugin {
     * @param Gdn_Controller $Sender
     */
    public function EntryController_SignIn_Handler($Sender, $Args) {
-      if (!$this->IsEnabled()) return;
       
       if (isset($Sender->Data['Methods'])) {
          $ImgSrc = Asset('/plugins/SteamSignIn/design/steam-signin.png');
@@ -93,22 +79,23 @@ class SteamSignInPlugin extends Gdn_Plugin {
       }
    }
 
+    public function Base_SignInIcons_Handler($Sender, $Args) {
+		echo "\n".$this->_GetButton();
+	}
+	
    public function Base_BeforeSignInButton_Handler($Sender, $Args) {
-      if (!$this->IsEnabled()) return;
 		echo "\n".$this->_GetButton();
 	}
 	
 	private function _GetButton() {      
       $ImgSrc = Asset('/plugins/SteamSignIn/design/steam-icon.png');
-      $ImgAlt = T('Sign In with Steam™');
+      $ImgAlt = T('Sign In with Steam');
       $SigninHref = $this->_AuthorizeHref();
       $PopupSigninHref = $this->_AuthorizeHref(TRUE);
       return "<a id=\"SteamAuth\" href=\"$SigninHref\" class=\"PopupWindow\" title=\"$ImgAlt\" popupHref=\"$PopupSigninHref\" popupHeight=\"400\" popupWidth=\"800\" ><img src=\"$ImgSrc\" alt=\"$ImgAlt\" /></a>";
    }
 	
 	public function Base_BeforeSignInLink_Handler($Sender) {
-      if (!$this->IsEnabled())
-			return;
 
 		if (!Gdn::Session()->IsValid())
 			echo "\n".Wrap($this->_GetButton(), 'li', array('class' => 'Connect SteamConnect'));
