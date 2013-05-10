@@ -1,9 +1,8 @@
-Not ready for production use... or even release.
+Not production ready
 
 Translate This
 ==============
-
-A Vanilla Forums plugin that provides client side translation using the Translate This Button (http://www.translateth.is).
+A Vanilla Forums plugin that provides client side translation using the Translate This Button (http://www.translateth.is). A special thanks to vrijvlinder for the idea.
 
 It is released under the GPLv3 and may be released under a different license with permission.
 

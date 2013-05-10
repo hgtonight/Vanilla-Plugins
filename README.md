@@ -4,5 +4,4 @@ This is a one stop repo shop for my Vanilla 2 Forums plugins. Not all are guaran
 
 License
 =======
-All code is licensed under GPL v3 unless specified otherwise. I will consider any requests to release under a different license as well.
-
+All code is released under the GPLv3 and may be released under a different license with permission.

@@ -1,6 +1,7 @@
-Honey-Pot
-=========
+Not production ready
 
+Honey Pot
+=========
 A Vanilla Forums plugin adding protection from bots registering while being transparent to actual users. It utilizes randomized field names, timestamps, and honey pots. Inspiration was taken from Ned Batchelder (http://nedbatchelder.com/text/stopbots.html).
 
 It is released under the GPLv3 and may be released under a different license with permission.

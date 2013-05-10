@@ -1,8 +1,7 @@
-Not ready for production use... or even release.
+Not production ready
 
-Bulk-Edit
+Bulk Edit
 =========
-
 A Vanilla Forums plugin in that provides bulk user editing. It is designed to hook into the default user management dashboard.
 
 It is released under the GPLv3 and may be released under a different license with permission.

@@ -1,7 +1,6 @@
 Expandable Categories
 =====================
-
-A Vanilla Forums plugin that turns the Categories panel into a collapsible list. Works best with root categories as headings enabled. Inspired by x00\'s Category Accordion plugin.
+A Vanilla Forums plugin that turns the Categories panel into a collapsible list. Works best with root categories as headings enabled. Inspired by x00's Category Accordion plugin.
 
 It is released under the GPLv3 and may be released under a different license with permission.
 

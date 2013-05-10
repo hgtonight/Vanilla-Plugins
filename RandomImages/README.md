@@ -1,6 +1,5 @@
 Category Images
 ===============
-
 A Vanilla Forums plugin that renders a list of random images from the current discussion model..
 
 It is released under the GPLv3 and may be released under a different license with permission.

@@ -1,3 +1,5 @@
+Not production ready
+
 Steam Sign In
 =============
 A Vanilla Forums plugin implementing Steam™ openID authentication. It is based on Google Sign In by Todd Burry (todd@vanillaforums.com) and Powered by Steam (http://steampowered.com).
