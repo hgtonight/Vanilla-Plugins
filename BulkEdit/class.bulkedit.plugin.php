@@ -13,7 +13,6 @@
 *	You should have received a copy of the GNU General Public License
 *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-// Define the plugin:
 $PluginInfo['BulkEdit'] = array(
 	'Title' => 'Bulk Edit',
 	'Description' => 'Allows for editing of multiple users at once. Add/remove roles, remove users, set up multiple roles, all from the Users dashboard.',
@@ -29,16 +28,8 @@ $PluginInfo['BulkEdit'] = array(
 	'License' => 'GPLv3'
 );
 
-/**
- * BulkEdit plugin for Vanilla
- * @author hgtonight@gmail.com
- */
 class BulkEdit extends Gdn_Plugin {
 
-	/**
-	 * Build the setting page.
-	 * @param $Sender
-	 */
 	public function SettingsController_BulkEdit_Create($Sender) {
 		$Sender->Permission('Garden.Settings.Manage');
 

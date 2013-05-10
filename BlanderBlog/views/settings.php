@@ -1,7 +1,7 @@
 <?php if (!defined("APPLICATION")) exit(); 
 /*
- *  BlandBlog vanilla plugin.
- *  Copyright (C) 2012 hgtonight@gmail.com
+ *  BlanderBlog vanilla plugin.
+ *  Copyright (C) 2013 hgtonight@gmail.com
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,33 +23,48 @@
 ?>
 <ul>
 	<li>
-		<h3><?php echo T("Blog Appearance"); ?></h3>
-		<ul class='CheckBoxList'>
-			<li>
-				<?php
-					echo $this->Form->Input("Plugins.BlandBlog.PostsPerPage", "input", array(
-						"size" => "3",
-						"maxlength" => "3",
-						"style" => "text-align: center;"
-					)); 
-					echo $this->Form->Label("Blog posts per page ( Default: 10 )", "Plugins.BlandBlog.PostsPerPage", array(
-						"class" => "CheckBoxLabel",
-						"style" => "margin-left: 10px;", 
-					)); 
-				?>
-			</li>
-		</ul>
-	</li>
-	<li>
 		<h3><?php echo T("Blog Categories"); ?></h3>
 		<?php 
-			echo $this->Form->CheckBoxList("Plugins.BlandBlog.CategoryIDs", $this->CategoryData, NULL, array(
+			echo $this->Form->CheckBoxList("Plugins.BlanderBlog.CategoryIDs", $this->CategoryData, NULL, array(
 				"TextField" => "Name", 
 				"ValueField" => "CategoryID",
 			));
 		?>
 	</li>
-	
+	<li>
+		<h3><?php echo T("Blog Appearance"); ?></h3>
+		<ul class='CheckBoxList'>
+			<li>
+				<?php
+					echo $this->Form->Input("Plugins.BlanderBlog.PostsPerPage", "input", array(
+						"size" => "3",
+						"maxlength" => "3",
+						"style" => "text-align: center;"
+					)); 
+					echo $this->Form->Label("Blog posts per page ( Default: 10 )", "Plugins.BlanderBlog.PostsPerPage", array(
+						"class" => "CheckBoxLabel",
+						"style" => "margin-left: 10px;", 
+					)); 
+				?>
+			</li>
+			<li>
+				<?php 
+					echo $this->Form->CheckBox(
+						"Plugins.BlanderBlog.HideBlogCategory", 
+						T("Hide Blog categories from category listing?")
+					);
+				 ?>
+			</li>
+			<li>
+				<?php
+					echo $this->Form->CheckBox(
+						"Plugins.BlanderBlog.DisableCSS", 
+						T("Disable Blander Blog default style. (If installed theme will handle the style)")
+					);
+				 ?>
+			</li>
+		</ul>
+	</li>
 </ul>
 <br>
 

@@ -1,11 +1,7 @@
 $(document).ready(function () {
-	// Apply any blog specific js here
-	
-	
-	
-	/*// Find images in front page blog posts and insert a caption block
-	$('.BlandBlog .Discussion .Message img').each(function () {
-		if( $(this).attr('alt') )
+	// Find images in front page blog posts and insert a caption block
+	$('.Blog .Discussion .Message img').each(function () {
+		if( $(this).attr('alt') != 'image')
 		{
 			$(this).after('<div class="Caption">' + $(this).attr('alt') + '</div>');
 		}
@@ -25,5 +21,5 @@ $(document).ready(function () {
 		{
 			$(this).remove();
 		}
-	});*/
+	});
 });
