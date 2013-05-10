@@ -22,10 +22,10 @@ $PluginInfo["BlandBlog"] = array(
 	"Description" => "A blander blog plugin for Vanilla 2+. Based on <a href=\"http://blog.canofsleep.com\">Dan Dumont's</a> absolutely excellent NillaBlog plugin.",
 	"Version" => "1.0",
 	"Author" => "Zachary Doll",
+	"AuthorUrl" => "http://www.daklutz.com",
 	"AuthorEmail" => "hgtonight@gmail.com",
 	"SettingsUrl" => "/dashboard/settings/blandblog",
 	"SettingsPermission" => "Garden.Settings.Manage",
-	"AuthorUrl" => "http://www.zacharydoll.com",
 	"RequiredApplications" => array("Vanilla" => "2.0.18"),
 	'License' => 'GPLv3'
 );

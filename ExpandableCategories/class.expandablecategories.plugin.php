@@ -13,7 +13,6 @@
 *	You should have received a copy of the GNU General Public License
 *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-// Define the plugin:
 $PluginInfo['ExpandableCategories'] = array(
 	'Name' => 'Expandable Categories',
 	'Description' => 'Turns the Categories panel into a collapsible list. Inspired by x00\'s Category Accordion plugin.',
@@ -21,7 +20,7 @@ $PluginInfo['ExpandableCategories'] = array(
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'Author' => "Zachary Doll",
 	'AuthorEmail' => 'hgtonight@gmail.com',
-	'AuthorUrl' => 'http://github.com/hgtonight/Expandable-Categories',
+	'AuthorUrl' => 'http://www.daklutz.com',
 	'License' => 'GPLv3'
 );
 

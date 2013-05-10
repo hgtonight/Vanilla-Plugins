@@ -13,7 +13,6 @@
 *	You should have received a copy of the GNU General Public License
 *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-// Define the plugin:
 $PluginInfo['JumpToTop'] = array(
 	'Name' => 'Jump To Top',
 	'Description' => 'A simple Vanilla Forums plugin that provides a link to jump to the top of the page. A special thanks to vrijvlinder for the idea.',
@@ -21,7 +20,7 @@ $PluginInfo['JumpToTop'] = array(
 	'RequiredApplications' => array('Vanilla' => '2.0.10'),
 	'Author' => "Zachary Doll",
 	'AuthorEmail' => 'hgtonight@gmail.com',
-	'AuthorUrl' => 'http://github.com/hgtonight/Jump-To-Top',
+	'AuthorUrl' => 'http://www.daklutz.com',
 	'License' => 'GPLv3'
 );
 

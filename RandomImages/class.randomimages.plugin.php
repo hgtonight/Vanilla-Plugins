@@ -22,7 +22,7 @@ $PluginInfo['RandomImages'] = array(
 	'HasLocale' => TRUE,
 	'Version' => '0.3',
 	'Author' => 'Zachary Doll',
-	'AuthorEmail' => 'Zachary.Doll@gmail.com',
+	'AuthorEmail' => 'hgtonight@daklutz.com',
 	'AuthorUrl' => 'http://www.daklutz.com/',
 );
 

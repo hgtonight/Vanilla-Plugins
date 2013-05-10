@@ -13,7 +13,6 @@
 *	You should have received a copy of the GNU General Public License
 *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-// Define the plugin:
 $PluginInfo['LatestPostList'] = array(
    'Description' => 'Lists the latest posts in the panel. Respects permissions, has an AJAX refresh, and is configurable.',
    'Version' => '1.5.1',
@@ -24,8 +23,8 @@ $PluginInfo['LatestPostList'] = array(
    'SettingsUrl' => '/plugin/latestpostlist',
    'SettingsPermission' => 'Garden.AdminUser.Only',
    'Author' => "Zachary Doll",
-   'AuthorEmail' => 'hgtonight@gmail.com',
-   'AuthorUrl' => 'http://github.com/hgtonight/Latest-Post-List',
+   'AuthorEmail' => 'hgtonight@daklutz.com',
+   'AuthorUrl' => 'http://www.daklutz.com',
    'License' => 'GPLv3'
 );
 

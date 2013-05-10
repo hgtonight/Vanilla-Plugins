@@ -25,7 +25,7 @@ $PluginInfo['BulkEdit'] = array(
 	'SettingsPermission' => 'Garden.AdminUser.Only',
 	'Author' => "Zachary Doll",
 	'AuthorEmail' => 'hgtonight@gmail.com',
-	'AuthorUrl' => 'http://github.com/hgtonight/bulk-edit',
+	'AuthorUrl' => 'http://www.daklutz.com',
 	'License' => 'GPLv3'
 );
 
