@@ -35,7 +35,6 @@ class JumpToTop extends Gdn_Plugin {
 	public function Base_Render_Before($Sender) {
 		// bring in the module into every controller that isn't in the dashboard view
 		if($Sender->MasterView != 'admin' && !C('EnabledPlugins.embedvanilla',FALSE)) {
-			include_once(PATH_PLUGINS.DS.'JumpToTop'.DS.'class.jumptotop.module.php');
 			$Module = new JumpToTopModule($Sender);
 			$Sender->AddModule($Module);
 

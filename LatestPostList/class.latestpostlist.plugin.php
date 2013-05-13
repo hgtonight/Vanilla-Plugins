@@ -40,7 +40,7 @@ class LatestPostList extends Gdn_Plugin {
 	private function LoadLPLModule($Sender) {
 		$Count = C('Plugins.LatestPostList.Count', 5);
 		$Link = C('Plugins.LatestPostList.Link', 'discussions');
-		include_once(PATH_PLUGINS.DS.'LatestPostList'.DS.'class.latestpostlist.module.php');
+		
 		$LatestPostListModule = new LatestPostListModule($Sender);
 		$LatestPostListModule->SetData($Count, $Link);
 		return $LatestPostListModule;

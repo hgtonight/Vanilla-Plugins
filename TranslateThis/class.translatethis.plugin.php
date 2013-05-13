@@ -59,7 +59,6 @@ class TranslateThis extends Gdn_Plugin {
 	public function Base_Render_Before($Sender) {
 		// bring in the module into every controller that isn't in the dashboard view
 		if($Sender->MasterView != 'admin') {
-			include_once(PATH_PLUGINS.DS.'TranslateThis'.DS.'class.translatethis.module.php');
 			$Module = new TranslateThisModule($Sender);
 			$Sender->AddModule($Module);
 
