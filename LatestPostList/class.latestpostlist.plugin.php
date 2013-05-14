@@ -15,7 +15,7 @@
 */
 $PluginInfo['LatestPostList'] = array(
    'Description' => 'Lists the latest posts in the panel. Respects permissions, has an AJAX refresh, and is configurable.',
-   'Version' => '1.5.1',
+   'Version' => '1.5.2',
    'RequiredApplications' => array('Vanilla' => '2.0.10'),
    'RequiredTheme' => FALSE, 
    'RequiredPlugins' => FALSE,
@@ -111,7 +111,7 @@ class LatestPostList extends Gdn_Plugin {
 	
 	// Used to make the ajax refresh intelligent
 	// This gets the latest post date, the latest post list and returns it as json object
-	public function Controller_getnewlist($Sender) {
+	public function Controller_GetNewList($Sender) {
 		$LPL = $this->LoadLPLModule($Sender);
 		$Data = array( 'date' => $LPL->GetDate(), 'list' => $LPL->PostList() );
 		echo json_encode($Data);
