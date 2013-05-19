@@ -1,0 +1,85 @@
+.StatsBox {
+	background: #004C9B;
+	padding: 5px 5px 0;
+	float: right;
+	height: 38px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 18px;
+	line-height: 1.2;
+}
+
+.StatsBox span {
+	display: block;
+	font-weight: normal;
+	font-size:9px;
+	line-height: 1;
+	padding-bottom:2px;
+	min-width:38px;
+}
+
+.StatsBox,
+.StatsBox a {
+	color: #99e2fe;
+	display: block;
+}
+
+.StatsBox a {
+	position: relative;
+	z-index: 10;
+}
+
+.StatsBox a:hover {
+	color: #fff;
+	text-shadow: 0 0px 5px #fff;
+}
+
+.ViewsBox {
+	background: #0065CE;
+}
+
+.FollowsBox {
+	background: #0053A9;
+}
+
+ul.Discussions div.ItemContent a.Title {
+	max-width: none;
+}
+
+ul.DataList li.Item {
+	position: relative;
+}
+
+ul.DataList div.Options {
+	float:none;
+	width:auto;
+	position: absolute;
+	top: 2px;
+	right: 208px;
+}
+
+ul.DataList div.Meta {
+	z-index: 5;
+}
+
+div.Meta span.CommentCount {
+	display: none;
+}
+
+ul.DataList div.Meta strong {
+	box-shadow: 0px 0px 2px #777;
+	-moz-box-shadow: 0px 0px 2px #777;
+	-webkit-box-shadow: 0px 0px 2px #777;
+	position:absolute;
+	top: 24px;
+	left: 668px;
+	white-space: nowrap;
+}
+
+ul.MessageList li.Item {
+	background: #fff;
+}
+
+ul.MessageList div.Meta {
+	position: relative;
+}
