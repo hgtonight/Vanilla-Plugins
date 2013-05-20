@@ -16,11 +16,10 @@
 $PluginInfo['RandomImages'] = array(
 	'Name' => 'Random Images',
 	'Description' => 'Renders a list of random images from the current discussion model.',
-	'RequiredTheme' => FALSE,
-	'RequiredPlugins' => FALSE,
 	'MobileFriendly' => TRUE,
-	'HasLocale' => TRUE,
-	'Version' => '0.3',
+	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
+	'SettingsUrl' => '/settings/randomimages',
+	'SettingsPermission' => 'Garden.Settings.Manage',
 	'Author' => 'Zachary Doll',
 	'AuthorEmail' => 'hgtonight@daklutz.com',
 	'AuthorUrl' => 'http://www.daklutz.com/',
@@ -65,29 +64,59 @@ class RandomImagesPlugin extends Gdn_Plugin {
 			return FALSE;
 		}
 		
+		$Images = array();
 		$ImageList = '';
 		$ImageCount = 0;
-		
+		$ImageMax = C('Plugins.RandomImages.MaxLength', 10);
 		foreach($DiscussionModel->Result() as $Discussion) {
-			preg_match('#\<img.+?src="([^"]*).+?\>|\[img\]([^\[]*)\[\/img\]#s', $Discussion->Body, $ImageSrcs);
-			if ($ImageSrcs[1]) {
-				$ImageList .= Wrap(Anchor(Img($ImageSrcs[1], array('class' => 'RandomImage')), $Discussion->Url),
-				'li');
-				$ImageCount++;
-			}
-			else if($ImageSrcs[2]) {
-				$ImageList .= Wrap(Anchor(Img($ImageSrcs[2], array('class' => 'RandomImage')), $Discussion->Url),
-				'li');
-				$ImageCount++;
-			}
-			if($ImageCount >= C('Plugins.RandomImage.MaxLength', 10) ) {
-				echo Wrap($ImageList, 'ul', array('id' => 'RandomImageList'));
-				break;
+			$ImageFound = preg_match_all('/([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif))/i', $Discussion->Body, $ImageSrcs);
+			var_dump($ImageSrcs);
+			if ($ImageFound) {
+				$i = 0;
+				while($i < $ImageFound) {
+					$i++;
+					array_push($Images, $ImageSrcs[0][$i]);
+				}
 			}
 		}
-		if($ImageCount < C('Plugins.RandomImage.MaxLength', 10) ) {
-			echo Wrap($ImageList, 'ul', array('id' => 'RandomImageList'));
+		var_dump($Images);
+		// assemble a list
+		// $ImageList .= Wrap(Anchor(Img($ImageSrcs[1], array('class' => 'RandomImage')), $Discussion->Url),
+		// 'li');
+		// $ImageCount++;
+				
+		//if($ImageCount < $ImageMax) {
+			// echo Wrap($ImageList, 'ul', array('id' => 'RandomImageList'));
+		//}
+	}
+	
+	public function SettingsController_RandomImages_Create($Sender) {
+		$Sender->Permission('Garden.Settings.Manage');
+
+		$Validation = new Gdn_Validation();
+		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
+		$ConfigurationModel->SetField(array(
+			'Plugins.RandomImages.MaxLength'
+			));
+		$Sender->Form->SetModel($ConfigurationModel);
+
+		if ($Sender->Form->AuthenticatedPostBack() === FALSE) {
+			$Sender->Form->SetData($ConfigurationModel->Data);
+		} else {
+			$ConfigurationModel->Validation->ApplyRule('Plugins.RandomImages.MaxLength', 'Integer');
+        	$Data = $Sender->Form->FormValues();
+			if ($Sender->Form->Save() !== FALSE) {
+        		$Sender->InformMessage('<span class="InformSprite Sliders"></span>'.T("Your changes have been saved."),'HasSprite');
+			}
 		}
+		
+		$Sender->AddSideMenu();
+		$Sender->Render($this->GetView('settings.php'));
+	}
+	
+	public function Base_GetAppSettingsMenuItems_Handler($Sender) {
+		$Menu = &$Sender->EventArguments['SideMenu'];
+		$Menu->AddLink('Add-ons', 'Random Images', 'settings/randomimages', 'Garden.Settings.Manage');
 	}
 	
 	private function _AddResources($Sender) {
