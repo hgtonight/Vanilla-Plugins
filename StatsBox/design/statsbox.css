@@ -50,14 +50,6 @@ ul.DataList li.Item {
 	position: relative;
 }
 
-ul.DataList div.Options {
-	float:none;
-	width:auto;
-	position: absolute;
-	top: 2px;
-	right: 208px;
-}
-
 ul.DataList div.Meta {
 	z-index: 5;
 }
