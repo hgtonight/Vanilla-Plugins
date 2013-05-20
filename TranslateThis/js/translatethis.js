@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	var Settings = gdn.definition('TranslateThisSettings');
+	var Settings = $.parseJSON(gdn.definition('TranslateThisSettings'));
 	console.log(Settings);
 	
 	TranslateThis({

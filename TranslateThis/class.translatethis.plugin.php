@@ -48,10 +48,6 @@ class TranslateThis extends Gdn_Plugin {
 		$Sender->Title('TranslateThis Settings');
 		$Sender->AddSideMenu('/dashboard/settings/translatethis');
 
-		$CategoryModel = new CategoryModel();
-		$Sender->SetData("CategoryData", $CategoryModel->GetAll(), TRUE);
-		array_shift($Sender->CategoryData->Result());
-
 		$Sender->Render($this->GetView("settings.php"));
 	}
 
@@ -67,7 +63,7 @@ class TranslateThis extends Gdn_Plugin {
 			
 			// construct the settings array and pass it as a definition
 			$TTSettings = '';
-			$Sender->AddDefinition('TranslateThisSettings',$TTSettings);
+			$Sender->AddDefinition('TranslateThisSettings',json_encode($TTSettings));
 		}
 	}
 
