@@ -16,7 +16,7 @@
 $PluginInfo['RandomImages'] = array(
 	'Name' => 'Random Images',
 	'Description' => 'Renders a list of random images from the current discussion model.',
-	'Version' => '1.1',
+	'Version' => '0.4',
 	'MobileFriendly' => TRUE,
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'SettingsUrl' => '/settings/randomimages',
