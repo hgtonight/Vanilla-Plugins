@@ -75,3 +75,11 @@ ul.MessageList li.Item {
 ul.MessageList div.Meta {
 	position: relative;
 }
+
+ul.DataList div.Options {
+	float:none;
+	width:auto;
+	position: absolute;
+	top: 2px;
+	right: 156px;
+}

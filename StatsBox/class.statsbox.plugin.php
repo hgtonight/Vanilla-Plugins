@@ -16,7 +16,7 @@
 $PluginInfo['StatsBox'] = array(
 	'Name' => 'Stats Box',
 	'Description' => 'Adds a stats box to the discussions list that shows the total comments, views, and follows. Inspired on Voting by Mark O\'Sullivan.',
-	'Version' => '1.1',
+	'Version' => '1.2',
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'SettingsUrl' => '/settings/statsbox',
 	'SettingsPermission' => 'Garden.Settings.Manage',
@@ -34,23 +34,19 @@ class StatsBoxPlugin extends Gdn_Plugin {
 		}
 	}
 
-	public function DiscussionsController_DiscussionOptions_Handler($Sender) {
-		$Session = Gdn::Session();
+	public function DiscussionsController_BeforeDiscussionContent_Handler($Sender) {
 		$Discussion = GetValue('Discussion', $Sender->EventArguments);
-		
-		if (!is_numeric($Discussion->CountBookmarks)) {
-			$Discussion->CountBookmarks = 0;
-		}
+		$String = '';
 		
 		if(C('Plugins.StatsBox.HideComments', FALSE) == FALSE) {
-			echo Wrap(
+			$String .= Wrap(
 				Wrap(T('Comments')) . Gdn_Format::BigNumber($Discussion->CountComments - 1),
 				'span',
 				array('class' => 'StatsBox AnswersBox'));
 		}
 		
 		if(C('Plugins.StatsBox.HideViews', FALSE) == FALSE) {
-			echo Wrap(
+			$String .= Wrap(
 				Wrap(T('Views')) . Gdn_Format::BigNumber($Discussion->CountViews),
 				'span',
 				array('class' => 'StatsBox ViewsBox'));
@@ -58,9 +54,13 @@ class StatsBoxPlugin extends Gdn_Plugin {
 
 		
 		if(C('Plugins.StatsBox.HideFollows', FALSE) == FALSE) {
+			if (!is_numeric($Discussion->CountBookmarks)) {
+				$Discussion->CountBookmarks = 0;
+			}
 			$BookmarkAction = T($Discussion->Bookmarked == '1' ? 'Unbookmark' : 'Bookmark');
+			$Session = Gdn::Session();
 			if ($Session->IsValid()) {
-				echo Wrap(
+				$String .= Wrap(
 					Anchor(
 						Wrap(T('Follows')) . Gdn_Format::BigNumber($Discussion->CountBookmarks),
 						'/vanilla/discussion/bookmark/'.$Discussion->DiscussionID.'/'.$Session->TransientKey().'?Target='.urlencode($Sender->SelfUrl),
@@ -71,12 +71,14 @@ class StatsBoxPlugin extends Gdn_Plugin {
 				array('class' => 'StatsBox FollowsBox'));
 			}
 			else {
-				echo Wrap(
+				$String .= Wrap(
 					Wrap(T('Follows')) . $Discussion->CountBookmarks,
 					'span',
 					array('class' => 'StatsBox FollowsBox'));
 			}
 		}
+		
+		echo $String;
 	}
 
 	public function SettingsController_StatsBox_Create($Sender) {
