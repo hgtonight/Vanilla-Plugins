@@ -16,7 +16,7 @@
 $PluginInfo['RandomImages'] = array(
 	'Name' => 'Random Images',
 	'Description' => 'Renders a list of random images from the current discussion model.',
-	'Version' => '0.4',
+	'Version' => '0.5',
 	'MobileFriendly' => TRUE,
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'SettingsUrl' => '/settings/randomimages',
@@ -66,6 +66,7 @@ class RandomImagesPlugin extends Gdn_Plugin {
 		}
 		
 		$Images = array();
+		$CulledImages = array();
 		$ImageList = '';
 		$ImageCount = 0;
 		$ImageMax = C('Plugins.RandomImages.MaxLength', 10);
@@ -79,17 +80,26 @@ class RandomImagesPlugin extends Gdn_Plugin {
 				}
 			}
 		}
-		// remove random images until we are under the max length
-		while(count($Images) > $ImageMax) {
-			unset($Images[array_rand($Images)]);
-		}
-		// shuffle it
-		$ImageList = '';
-		if(shuffle($Images)) {
-			foreach($Images as $Image) {
-				// assemble a list
-				$ImageList .= Wrap(Anchor(Img($Image['image'], array('class' => 'RandomImage')), $Image['url']),'li');
+		
+		if(count($Images) <= $ImageMax) {
+			// shuffle it to still be random
+			if(shuffle($Images)) {
+				$CulledImages = &$Images;
 			}
+		}
+		else {
+			// add random images until we are at max length
+			while(count($CulledImages) < $ImageMax) {
+				$TempKey = array_rand($Images);
+				array_push($CulledImages, $Images[$TempKey]);
+				unset($Images[$TempKey]);
+			}
+		}
+		
+		$ImageList = '';
+		foreach($CulledImages as $Image) {
+			// assemble a list
+			$ImageList .= Wrap(Anchor(Img($Image['image'], array('class' => 'RandomImage')), $Image['url']),'li');
 		}
 		
 		echo Wrap($ImageList, 'ul', array('id' => 'RandomImageList'));
