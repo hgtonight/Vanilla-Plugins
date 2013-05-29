@@ -16,7 +16,7 @@ jQuery(document).ready(function($){
 	});
 	
 	// Hide all the sub categories by default
-	$('ul.PanelCategories li:not(.Depth1, :first)').hide();
+	$('ul.PanelCategories li:not(.Depth1, .Heading, :first)').hide();
 	
 	// Show the active subcategory (and siblings) if wanted
 	if(gdn.definition('ExpandActiveOnLoad')) {

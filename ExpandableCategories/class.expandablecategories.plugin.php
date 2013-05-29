@@ -16,7 +16,7 @@
 $PluginInfo['ExpandableCategories'] = array(
 	'Name' => 'Expandable Categories',
 	'Description' => 'Turns the Categories panel into a collapsible list. Inspired by x00\'s Category Accordion plugin.',
-	'Version' => '1.1',
+	'Version' => '1.2',
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'Author' => "Zachary Doll",
 	'AuthorEmail' => 'hgtonight@gmail.com',
