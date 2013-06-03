@@ -16,7 +16,7 @@
 $PluginInfo['StatsBox'] = array(
 	'Name' => 'Stats Box',
 	'Description' => 'Adds a stats box to the discussions list that shows the total comments, views, and follows. Inspired on Voting by Mark O\'Sullivan.',
-	'Version' => '1.2',
+	'Version' => '1.2.1',
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'SettingsUrl' => '/settings/statsbox',
 	'SettingsPermission' => 'Garden.Settings.Manage',
@@ -40,7 +40,7 @@ class StatsBoxPlugin extends Gdn_Plugin {
 		
 		if(C('Plugins.StatsBox.HideComments', FALSE) == FALSE) {
 			$String .= Wrap(
-				Wrap(T('Comments')) . Gdn_Format::BigNumber($Discussion->CountComments - 1),
+				Wrap(T('Comments')) . Gdn_Format::BigNumber($Discussion->CountComments),
 				'span',
 				array('class' => 'StatsBox AnswersBox'));
 		}
