@@ -16,7 +16,7 @@
 $PluginInfo['StatsBox'] = array(
 	'Name' => 'Stats Box',
 	'Description' => 'Adds a stats box to the discussions list that shows the total comments, views, and follows. Inspired on Voting by Mark O\'Sullivan.',
-	'Version' => '1.2.1',
+	'Version' => '1.3',
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'SettingsUrl' => '/settings/statsbox',
 	'SettingsPermission' => 'Garden.Settings.Manage',
@@ -28,13 +28,13 @@ $PluginInfo['StatsBox'] = array(
 
 class StatsBoxPlugin extends Gdn_Plugin {
 
-	public function DiscussionsController_Render_Before($Sender) {
+	private function AddResources($Sender) {
 		if(C('Plugins.StatsBox.DisableCSS', FALSE) == FALSE) {
 			$Sender->AddCSSFile($this->GetResource('design/statsbox.css', FALSE, FALSE));
 		}
 	}
-
-	public function DiscussionsController_BeforeDiscussionContent_Handler($Sender) {
+	
+	private function RenderStatsBox($Sender) {
 		$Discussion = GetValue('Discussion', $Sender->EventArguments);
 		$String = '';
 		
@@ -80,7 +80,23 @@ class StatsBoxPlugin extends Gdn_Plugin {
 		
 		echo $String;
 	}
-
+	
+	public function CategoriesController_Render_Before($Sender) {
+		$this->AddResources($Sender);
+	}
+	
+	public function DiscussionsController_Render_Before($Sender) {
+		$this->AddResources($Sender);
+	}
+	
+	public function CategoriesController_BeforeDiscussionContent_Handler($Sender) {
+		$this->RenderStatsBox($Sender);
+	}
+	
+	public function DiscussionsController_BeforeDiscussionContent_Handler($Sender) {
+		$this->RenderStatsBox($Sender);
+	}
+	
 	public function SettingsController_StatsBox_Create($Sender) {
 		$Sender->Permission('Garden.Settings.Manage');
 
