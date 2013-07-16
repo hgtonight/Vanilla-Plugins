@@ -71,7 +71,12 @@ class LatestPostListModule extends Gdn_Module {
 			ob_start();
 			?>
 			<div id="LatestPostList" class="Box"><?php
-				echo Wrap(Anchor(T('Latest Posts'), $this->_Link), 'h4');
+				if($this->_Link) {
+					echo Wrap(Anchor(T('Latest Posts'), $this->_Link), 'h4');
+				}
+				else {
+					echo Wrap(T('Latest Posts'), 'h4');
+				}
 				?><ul id="LPLUl" class="PanelInfo">
 					<?php echo $this->PostList();
 				?></ul>

@@ -15,7 +15,7 @@
 */
 $PluginInfo['LatestPostList'] = array(
    'Description' => 'Lists the latest posts in the panel. Respects permissions, has an AJAX refresh, and is configurable.',
-   'Version' => '1.5.2',
+   'Version' => '1.5.3',
    'RequiredApplications' => array('Vanilla' => '2.0.10'),
    'RequiredTheme' => FALSE, 
    'RequiredPlugins' => FALSE,
@@ -59,7 +59,7 @@ class LatestPostList extends Gdn_Plugin {
 	//This is a common hook that fires for all controllers on the Render method
 	public function Base_Render_Before($Sender) {
 		// Get the config and controller name for comparison
-		$Pages = C('Plugins.LatestPostList.Pages', 'all');
+		$Pages = C('Plugins.LatestPostList.Pages', 'both');
 		$Controller = $Sender->ControllerName;
 		
 		// Enumerate what preference relates to which controller	
@@ -74,22 +74,25 @@ class LatestPostList extends Gdn_Plugin {
 				$ShowOnController = array(
 				'discussioncontroller',
 				'discussionscontroller',
-				'categoriescontroller'
+				'categoriescontroller',
+				'draftscontroller'
 				);
 				break;
-			case 'all':
+			case 'both':
 			default:
 				$ShowOnController = array(
 				'discussioncontroller',
 				'categoriescontroller',
 				'discussionscontroller',
+				'draftscontroller',
 				'profilecontroller',
 				'activitycontroller'
 				);
-				break;				
+				break;	
 		}
-		// leave if we aren't in an approved controller
-		if (!InArrayI($Controller, $ShowOnController)) {
+		// if we want to be on all pages, skip the check
+		// otherwise leave if we aren't in an approved controller
+		if ($Pages != 'all' && !InArrayI($Controller, $ShowOnController) ) {
 			return;
 		}
 
@@ -121,7 +124,10 @@ class LatestPostList extends Gdn_Plugin {
 	public function Controller_Index($Sender) {
 		// Admins only
 		$Sender->Permission('Vanilla.Settings.Manage');
+		
+		// Set data used by the view
 		$Sender->SetData('PluginDescription',$this->GetPluginKey('Description'));
+		
 		$Validation = new Gdn_Validation();
 		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
 		$ConfigurationModel->SetField(array(
@@ -129,7 +135,7 @@ class LatestPostList extends Gdn_Plugin {
 			'Plugins.LatestPostList.Frequency'	=> 120,
 			'Plugins.LatestPostList.Count'	=> 5,
 			'Plugins.LatestPostList.Link'	=> 'discussions',
-			'Plugins.LatestPostList.Effects' => 'none'
+			'Plugins.LatestPostList.Effects' => 'none',
 		));
 
 		// Set the model on the form.
@@ -149,13 +155,11 @@ class LatestPostList extends Gdn_Plugin {
 			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Count', 'Required');
 			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Count', 'Integer');
 
-			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Link', 'Required');
-			
 			$ConfigurationModel->Validation->ApplyRule('Plugins.LatestPostList.Effects', 'Required');
 			
 			$Saved = $Sender->Form->Save();
 			if ($Saved) {
-				$Sender->InformMessage('<span class="InformSprite Sliders"></span>'.T("Your changes have been saved."),'HasSprite');
+				$Sender->InformMessage('<span class="InformSprite Sliders"></span>'.T('Your changes have been saved.'),'HasSprite');
 			}
 		}
 		
@@ -177,8 +181,8 @@ class LatestPostList extends Gdn_Plugin {
 		SaveToConfig('Plugins.LatestPostList.Frequency', 120);
 		SaveToConfig('Plugins.LatestPostList.Effects', 'none');
 		SaveToConfig('Plugins.LatestPostList.Count', 5);
-		SaveToConfig('Plugins.LatestPostList.Pages', "all");
-		SaveToConfig('Plugins.LatestPostList.Link', "discussions");
+		SaveToConfig('Plugins.LatestPostList.Pages', 'all');
+		SaveToConfig('Plugins.LatestPostList.Link', 'discussions');
 	}
 
 	// fired on disable (removal)

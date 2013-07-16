@@ -38,14 +38,15 @@
 				'div',
 				array('class' => 'Info')).
 			$this->Form->DropDown('Plugins.LatestPostList.Pages', array(
-				'all'             => 'Discussions & Announcements',
-				'announcements'   => 'Just Announcements',
-				'discussions'     => 'Just Discussions'
+				'both'          => 'Discussions & Announcements',
+				'announcements' => 'Just Announcements',
+				'discussions'   => 'Just Discussions',
+				'all'           => 'Every frontend page'
 			)),
 			'li').
 		Wrap(
 			$this->Form->Label(T('Link'), 'Plugins.LatestPostList.Link').
-			Wrap(T('The url of the page the module header points to'),
+			Wrap(T('The url of the page the module header points to; leave blank if you don\'t want a link'),
 				'div',
 				array('class' => 'Info')).
 			Wrap(Url('/', TRUE), 'strong').
@@ -97,7 +98,7 @@
 			) ),
 			'li'),
 		'ul');
-		
+	
 	echo $this->Form->Close('Save');
 	?>
 </div>
