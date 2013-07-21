@@ -51,13 +51,7 @@ $CssClass = CssClass($Discussion, FALSE);
          <div class="AuthorWrap">
             <span class="Author">
                <?php
-               if ($UserPhotoFirst) {
-                  echo UserPhoto($Author);
-                  echo UserAnchor($Author, 'Username');
-               } else {
-                  echo UserAnchor($Author, 'Username');
-                  echo UserPhoto($Author);
-               }
+               echo UserAnchor($Author, 'Username');
                ?>
             </span>
             <span class="AuthorInfo">
@@ -82,15 +76,6 @@ $CssClass = CssClass($Discussion, FALSE);
             if ($Source = GetValue('Source', $Discussion))
                echo ' '.Wrap(sprintf(T('via %s'), T($Source.' Source', $Source)), 'span', array('class' => 'MItem MItem-Source')).' ';
             
-            // Category
-            if (C('Vanilla.Categories.Use')) {
-               echo ' <span class="MItem Category">';
-               echo ' '.T('in').' ';
-               echo Anchor(htmlspecialchars($this->Data('Discussion.Category')), CategoryUrl($this->Data('Discussion.CategoryUrlCode')));
-               echo '</span> ';
-            }
-            // $this->FireEvent('DiscussionInfo');
-            // $this->FireEvent('AfterDiscussionMeta'); // DEPRECATED
             ?>
          </div>
       </div>
