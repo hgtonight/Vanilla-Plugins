@@ -78,14 +78,14 @@ class BulkEdit extends Gdn_Plugin {
 		);
 		
 		// find out what we want to do and setup the right form
-		$Request = $Sender->Request->GetRequestArguments();
+		/*$Request = $Sender->Request->GetRequestArguments();
 		$Request = $Request['post'];
 		$UserIDs = $Request['UserIDs'];
 		
 		switch($Request['WhatWeDo']) {
-		case 'remove':
+		case 'remove':*/
 			$this->_Remove_Users($Sender);
-			break;
+			/*break;
 		case 'role-add':
 			$this->_Add_Roles($Sender);
 			break;
@@ -103,13 +103,19 @@ class BulkEdit extends Gdn_Plugin {
 		$UserIDs = $UserModel->GetIDs($UserIDs);
 		$Sender->BulkEditUsers = $UserIDs;
 		$Sender->Render($this->GetView('remove-select-type.php'));
-		unset($Sender->BulkEditUsers);
+		unset($Sender->BulkEditUsers);*/
 	}
 	
 	public function UserController_UserCell_Handler($Sender) {
-		$User = $Sender->EventArgs['User'];
-		if($User->UserID) {
-			echo '<td><input type="checkbox" name="UserIDs[]" value="'.$User->UserID.'" class="md" /></td>';//var_dump($Sender);
+		//echo '<pre>'; var_dump($Sender); echo '</pre>';
+		if(property_exists($Sender, 'EventArgs')) {
+			$User = $Sender->EventArgs['User'];
+			if($User->UserID) {
+				echo '<td><input type="checkbox" name="UserIDs[]" value="'.$User->UserID.'" class="md" /></td>';//var_dump($Sender);
+			}
+			else {
+				echo '<th id="BulkEditAction" title="Toggle">'.T('Action').'</th>';
+			}
 		}
 		else {
 			echo '<th id="BulkEditAction" title="Toggle">'.T('Action').'</th>';
@@ -142,7 +148,17 @@ class BulkEdit extends Gdn_Plugin {
 
 	// Validate we have the right inputs, show a form asking how you want to remove them otherwise
 	private function _Remove_Users($Sender) {
-		$Validation = new Gdn_Validation();
+		// get the list of user ids
+		$Request = $Sender->Request->GetRequestArguments();
+		$UserIDs = $Request['post']['UserIDs'];
+		//var_dump($UserIDs);
+		$UserModel = new UserModel();
+		foreach ($UserIDs as $UserID) {
+			//echo $UserID;
+			$UserModel->Delete($UserID, array('DeleteMethod' => "delete"));
+		}
+		$Sender->Render($this->GetView('remove-users.php'));
+		/*$Validation = new Gdn_Validation();
 		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
 		$ConfigurationModel->SetField('Plugins.BulkEdit.RemoveMode');
 		$Sender->Form->SetModel($ConfigurationModel);
@@ -159,7 +175,7 @@ class BulkEdit extends Gdn_Plugin {
         		$Sender->StatusMessage = T("Users have been deleted!");
 		}
 
-		$Sender->Title('Bulk Delete Type');
+		$Sender->Title('Bulk Delete Type');*/
 	}
 	
 	public function Setup() {
