@@ -3,7 +3,7 @@ $(function(){
 	$('#BulkEditDropDown').change( function(event) {
 		event.preventDefault();
 		if($('.md:checked').length != 0 && $(this).val() !=0) {
-			$('form').attr({'action': gdn.url('plugin/bulkedit'), 'method': 'post'}).submit();
+			$('form').attr({'action': gdn.url('plugin/bulkedit/' + $(this).val()), 'method': 'post'}).submit();
 		}
 		else {
 			// gotta check some boxes son!

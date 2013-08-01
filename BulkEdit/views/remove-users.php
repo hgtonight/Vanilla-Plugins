@@ -19,8 +19,7 @@
 	?>
 </div>
 <div class="Content"><?php
-	//var_dump($this);
-	echo Wrap(T('You permanently deleted these users'),
+	echo Wrap(T('You deleted these users'),
 				'div',
 				array('class' => 'Warning'));
 

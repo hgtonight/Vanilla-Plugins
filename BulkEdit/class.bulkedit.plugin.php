@@ -30,88 +30,41 @@ $PluginInfo['BulkEdit'] = array(
 
 class BulkEdit extends Gdn_Plugin {
 
-	public function SettingsController_BulkEdit_Create($Sender) {
-		$Sender->Permission('Garden.Settings.Manage');
 
+	public function PluginController_BulkEdit_Create($Sender) {
+		$Sender->Title('Bulk Edit Users');
+		$Sender->AddSideMenu('plugin/bulkedit');
+
+		// get sub-pages forms ready
+		$this->Dispatch($Sender, $Sender->RequestArgs);
+	}
+	
+	public function Controller_Index($Sender) {
+		$Sender->Permission('Garden.Settings.Manage');
+		/*
 		$Validation = new Gdn_Validation();
 		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
-		$ConfigurationModel->SetField(array("Plugins.BulkEdit.CategoryIDs"));
-		$ConfigurationModel->SetField("Plugins.BulkEdit.PostsPerPage");
+		$ConfigurationModel->SetField("Plugins.BulkEdit.AdvancedMode");
 		$Sender->Form->SetModel($ConfigurationModel);
 
 		if ($Sender->Form->AuthenticatedPostBack() === FALSE) {
 			$Sender->Form->SetData($ConfigurationModel->Data);
 		} else {
         	$Data = $Sender->Form->FormValues();
-			$ConfigurationModel->Validation->ApplyRule("Plugins.BulkEdit.PostsPerPage", "Integer");
+			$ConfigurationModel->Validation->ApplyRule("Plugins.BulkEdit.AdvancedMode", "Boolean");
         	if ($Sender->Form->Save() !== FALSE)
         		$Sender->StatusMessage = T("Your settings have been saved.");
-		}
+		}*/
 
 		$Sender->Title('BulkEdit Settings');
-		$Sender->AddSideMenu('/dashboard/settings/nillablog');
-
-		$CategoryModel = new CategoryModel();
-		$Sender->SetData("CategoryData", $CategoryModel->GetAll(), TRUE);
-		array_shift($Sender->CategoryData->Result());
-
 		$Sender->Render($this->GetView("settings.php"));
 	}
 	
-	public function PluginController_BulkEdit_Create($Sender) {
-		$Sender->Title('Bulk Edit Users');
-		$Sender->AddSideMenu('plugin/bulkedit');
-
-		// get sub-pages forms ready
-		$Sender->Form = new Gdn_Form();
-		$this->Dispatch($Sender, $Sender->RequestArgs);
-	}
-	
-	public function Controller_Index($Sender) {
-		$Sender->Permission(
-			array(
-				'Garden.Users.Edit',
-				'Garden.Users.Delete'
-			),
-			'',
-			FALSE
-		);
-		
-		// find out what we want to do and setup the right form
-		/*$Request = $Sender->Request->GetRequestArguments();
-		$Request = $Request['post'];
-		$UserIDs = $Request['UserIDs'];
-		
-		switch($Request['WhatWeDo']) {
-		case 'remove':*/
-			$this->_Remove_Users($Sender);
-			/*break;
-		case 'role-add':
-			$this->_Add_Roles($Sender);
-			break;
-		case 'role-remove':
-			$this->_Remove_Roles($Sender);
-			break;
-		case 'role-set':
-			$this->Set_Roles($Sender);
-			break;
-		default:
-			echo 'No action specified!';
-		}
-		
-		$UserModel = new UserModel();
-		$UserIDs = $UserModel->GetIDs($UserIDs);
-		$Sender->BulkEditUsers = $UserIDs;
-		$Sender->Render($this->GetView('remove-select-type.php'));
-		unset($Sender->BulkEditUsers);*/
-	}
-	
 	public function UserController_UserCell_Handler($Sender) {
-		//echo '<pre>'; var_dump($Sender); echo '</pre>';
 		if(property_exists($Sender, 'EventArgs')) {
 			$User = $Sender->EventArgs['User'];
 			if($User->UserID) {
-				echo '<td><input type="checkbox" name="UserIDs[]" value="'.$User->UserID.'" class="md" /></td>';//var_dump($Sender);
+				echo '<td><input type="checkbox" name="UserIDs[]" value="'.$User->UserID.'" class="md" /></td>';
 			}
 			else {
 				echo '<th id="BulkEditAction" title="Toggle">'.T('Action').'</th>';
@@ -147,42 +100,55 @@ class BulkEdit extends Gdn_Plugin {
 	}
 
 	// Validate we have the right inputs, show a form asking how you want to remove them otherwise
-	private function _Remove_Users($Sender) {
-		// get the list of user ids
+	public function Controller_Remove($Sender) {
+		$Sender->Title('Bulk Delete Users');
+		$Sender->Permission(
+			array(
+				'Garden.Users.Delete'
+			),
+			'',
+			FALSE
+		);
+		
 		$Request = $Sender->Request->GetRequestArguments();
+		echo '<pre>'; var_dump($Sender->Request->GetRequestArguments()); echo '</pre>';
 		$UserIDs = $Request['post']['UserIDs'];
-		//var_dump($UserIDs);
+		
 		$UserModel = new UserModel();
-		foreach ($UserIDs as $UserID) {
-			//echo $UserID;
-			$UserModel->Delete($UserID, array('DeleteMethod' => "delete"));
-		}
-		$Sender->Render($this->GetView('remove-users.php'));
-		/*$Validation = new Gdn_Validation();
+		$UserIDs = $UserModel->GetIDs($UserIDs);
+		
+		$Sender->Form = new Gdn_Form();
+		$Validation = new Gdn_Validation();
 		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
 		$ConfigurationModel->SetField('Plugins.BulkEdit.RemoveMode');
 		$Sender->Form->SetModel($ConfigurationModel);
 
+		
 		if ($Sender->Form->AuthenticatedPostBack() === FALSE) {
 			// First time viewing
-			//$Sender->Form->AddHidden('Users', 
 			$Sender->Form->SetData($ConfigurationModel->Data);
+			$Sender->BulkEditUsers = $UserIDs;
+			$Sender->Render($this->GetView('remove-confirm.php'));
 		} else {
 			// Form submission handling
-        	$Data = $Sender->Form->FormValues();
-			$ConfigurationModel->Validation->ApplyRule('Plugins.BulkEdit.RemoveMode', 'Required');
-        	if ($Sender->Form->Save() !== FALSE)
-        		$Sender->StatusMessage = T("Users have been deleted!");
+			$Data = $Sender->Form->FormValues();
+			//$ConfigurationModel->Validation->ApplyRule('Plugins.BulkEdit.RemoveMode', 'Required');
+        	if ($Sender->Form->Save() !== FALSE) {
+        		foreach ($UserIDs as $UserID) {
+					$UserModel->Delete($UserID, array('DeleteMethod' => "delete"));
+				}
+				$Sender->StatusMessage = T("Users have been deleted!");
+				$Sender->Render($this->GetView('remove-complete.php'));
+			}
 		}
-
-		$Sender->Title('Bulk Delete Type');*/
+		
 	}
 	
 	public function Setup() {
-		// SaveToConfig('Plugins.BulkEdit.Frequency', 120);
+		// SaveToConfig('Plugins.BulkEdit.EnableAdvancedFeatures', TRUE);
 	}
 
 	public function OnDisable() {
-		// RemoveFromConfig('Plugins.BulkEdit.Frequency');
+		// RemoveFromConfig('Plugins.BulkEdit.EnableAdvancedFeatures');
 	}
 }

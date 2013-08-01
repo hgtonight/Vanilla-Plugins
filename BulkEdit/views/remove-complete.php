@@ -13,16 +13,11 @@
 *	You should have received a copy of the GNU General Public License
 *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+echo Wrap(Wrap(T($this->Data['Title']), 'h1'), 'div', array('class' => 'Header'));
 ?>
-<div class="Header"><?php
-		echo Wrap(T($this->Data['Title']), 'h1');
-	?>
-</div>
 <div class="Content"><?php
-	echo $this->Form->Open();
-	echo $this->Form->Errors();
-	//var_dump($this);
-	echo Wrap(T('Are you sure you want to permanently delete these users?'),
+	echo Wrap(T('You deleted these users'),
 				'div',
 				array('class' => 'Warning'));
 
@@ -33,19 +28,7 @@
 	echo Wrap($UserNames,
 		'div',
 		array('class' => 'BulkEditUserList Info'));
+	echo Anchor(T('Return to User List'), '/dashboard/user');
 	
-	/*echo $this->Form->Label(T('What do you want to do with their content?'), 'Plugins.BulkEdit.RemoveType');
-	echo $this->Form->RadioList('Plugins.BulkEdit.RemoveType', array(
-		'keep' => 'Keep User Content',
-		'wipe' => 'Blank User Content',
-		'delete' => 'Remove User Content'
-		), array('list' => TRUE));*/
-	
-	$this->Form->Button('Cancel', array(
-		'Type' => 'button',
-		'onclick' => 'history.go(-1)'
-		));
-		
-	echo $this->Form->Close('Delete Users Forever');
 	?>
 </div>
