@@ -15,7 +15,7 @@
 */
 $PluginInfo['BulkEdit'] = array(
 	'Title' => 'Bulk Edit',
-	'Description' => 'Allows for the removal of multiple users at once through the Users dashboard.', // Will Add/remove roles, remove users, set up multiple roles, all from the Users dashboard in the future
+	'Description' => 'Remove users, add/remove roles, set multiple roles, ban, and unban multiple users all from the Users dashboard.',
 	'Version' => '1.1',
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'RequiredTheme' => FALSE, 
@@ -47,23 +47,6 @@ class BulkEdit extends Gdn_Plugin {
 		$Sender->Title('Bulk Edit Users');
 		$Sender->PluginDescription = 'Allows for the removal of multiple users at once through the Users dashboard.';
 		
-		// Future settings page
-		$Sender->Permission('Garden.Settings.Manage');
-		/*
-		$Validation = new Gdn_Validation();
-		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
-		$ConfigurationModel->SetField("Plugins.BulkEdit.AdvancedMode");
-		$Sender->Form->SetModel($ConfigurationModel);
-
-		if ($Sender->Form->AuthenticatedPostBack() === FALSE) {
-			$Sender->Form->SetData($ConfigurationModel->Data);
-		} else {
-        	$Data = $Sender->Form->FormValues();
-			$ConfigurationModel->Validation->ApplyRule("Plugins.BulkEdit.AdvancedMode", "Boolean");
-        	if ($Sender->Form->Save() !== FALSE)
-        		$Sender->StatusMessage = T("Your settings have been saved.");
-		}*/
-
 		$Sender->Title('BulkEdit Settings');
 		$Sender->Render($this->GetView("settings.php"));
 	}
@@ -138,7 +121,6 @@ class BulkEdit extends Gdn_Plugin {
 	}
 	
 	public function Controller_Ban($Sender) {
-		$Sender->Title('Bulk Ban Users');
 		$Sender->Permission(
 			array(
 				'Garden.Users.Edit'
@@ -147,11 +129,25 @@ class BulkEdit extends Gdn_Plugin {
 			FALSE
 		);
 		
+		// Figure out if we are setting, removing, or adding roles
+		$Method = strtolower($Sender->RequestArgs[1]);
+		
+		if($Method == 'unban') {
+			$Sender->Title('Bulk Unban Users');
+			$BanAction = FALSE;
+		}
+		else {
+			$Sender->Title('Bulk Ban Users');
+			$Method = 'ban';
+			$BanAction = TRUE;
+		}
+
+		$Sender->BulkEditAction = $Method;
+		
 		$Sender->Form = new Gdn_Form();
 		$Validation = new Gdn_Validation();
 		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
 		
-		$ConfigurationModel->SetField('Plugins.BulkEdit.Confirm');
 		$ConfigurationModel->SetField('Plugins.BulkEdit.UserIDs');
 		
 		$Sender->Form->SetModel($ConfigurationModel);
@@ -163,8 +159,7 @@ class BulkEdit extends Gdn_Plugin {
 			$this->_AddInjectedUserIDsProperly($Sender);
 		} else {
 			// Form submission handling
-			$ConfigurationModel->Validation->ApplyRule('Plugins.BulkEdit.Confirm', 'Required');
-        	$ConfigurationModel->Validation->ApplyRule('Plugins.BulkEdit.UserIDs', 'Required');
+			$ConfigurationModel->Validation->ApplyRule('Plugins.BulkEdit.UserIDs', 'Required');
         	
 			$Data = $Sender->Form->FormValues();
 			$UserIDs = json_decode($Data['Plugins.BulkEdit.UserIDs']);
@@ -181,9 +176,9 @@ class BulkEdit extends Gdn_Plugin {
 				
 				$BanModel = new BanModel();
 				foreach ($Users as $User) {
-					$BanModel->SaveUser($User, TRUE);
+					$BanModel->SaveUser($User, $BanAction);
 				}
-				$Sender->StatusMessage = T('Users have been banned!');
+				$Sender->StatusMessage = ($BanAction) ? T('Users have been banned!') : T('Users have been unbanned!');
 				$Sender->BulkEditActionComplete = TRUE;
 			}
 		}
@@ -286,7 +281,7 @@ class BulkEdit extends Gdn_Plugin {
 					}
 					
 				}
-				$Sender->StatusMessage = T('Roles have been added!');
+				$Sender->StatusMessage = T('Roles have been saved!');
 				$Sender->BulkEditActionComplete = TRUE;
 				
 			}

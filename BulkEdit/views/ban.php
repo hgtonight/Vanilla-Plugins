@@ -18,6 +18,20 @@ echo Wrap(Wrap(T($this->Data['Title']), 'h1'), 'div', array('class' => 'Header')
 
 ?>
 <div class="Content"><?php
+	switch($this->BulkEditAction) {
+	default:
+	case 'ban':
+		$Completed = 'You banned these users:';
+		$WorkingOn = 'You are <strong>banning</strong> the following users:';
+		$ButtonAction = 'Ban Users';
+		break;
+	case 'unban':
+		$Completed = 'You unbanned these users:';
+		$WorkingOn = 'You are <strong>unbanning</strong> the following users:';
+		$ButtonAction = 'Unban Users';
+		break;
+	}
+	
 	// Construct a username list
 	$UserNames = '';
 	foreach($this->BulkEditUsers as $User) {
@@ -26,7 +40,7 @@ echo Wrap(Wrap(T($this->Data['Title']), 'h1'), 'div', array('class' => 'Header')
 	$UserNames = '<br />'.rtrim($UserNames, ', ');
 	
 	if($this->BulkEditActionComplete) {
-		echo Wrap(T('You banned these users:').'<br />'.$UserNames,
+		echo Wrap(T($Completed).'<br />'.$UserNames,
 			'div',
 			array('class' => 'BulkEditUserList Info'));
 			
@@ -37,23 +51,18 @@ echo Wrap(Wrap(T($this->Data['Title']), 'h1'), 'div', array('class' => 'Header')
 		echo $this->Form->Errors();
 		
 		echo Wrap(
-		T('You are going to <strong>ban</strong> the following users: ').
-			$UserNames,
-		'div',
-		array('class' => 'BulkEditUserList Info Confirm'));
+			T($WorkingOn).'<br />'.$UserNames,
+			'div',
+			array('class' => 'BulkEditUserList Info Confirm'));
 		
-		echo Wrap(
-			$this->Form->CheckBox('Plugins.BulkEdit.Confirm', 'Are you sure you want to ban these users?'),
-		'div',
-		array('class' => 'BulkEditUserList Info'));
-		
-		echo $this->Form->Button('Cancel', array(
+		echo $this->Form->Button(T('Cancel'), array(
 			'Type' => 'button',
 			'onclick' => 'history.go(-1)'
 			));
-		echo $this->Form->Button('Ban Users');
+		echo $this->Form->Button(T($ButtonAction));
 		
 		echo $this->Form->Close();
 	}
 ?>
 </div>
+

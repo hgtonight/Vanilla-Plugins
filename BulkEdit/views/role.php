@@ -63,11 +63,11 @@ echo Wrap(Wrap(T($this->Data['Title']), 'h1'), 'div', array('class' => 'Header')
 		
 		echo $this->Form->CheckBoxList("Plugins.BulkEdit.RoleIDs", array_flip($this->RoleData), array_flip($this->UserRoleData)); 
 
-		echo $this->Form->Button('Cancel', array(
+		echo $this->Form->Button(T('Cancel'), array(
 			'Type' => 'button',
 			'onclick' => 'history.go(-1)'
 			));
-		echo $this->Form->Button($ButtonAction);
+		echo $this->Form->Button(T($ButtonAction));
 		
 		echo $this->Form->Close();
 	}

@@ -61,15 +61,15 @@ echo Wrap(Wrap(T($this->Data['Title']), 'h1'), 'div', array('class' => 'Header')
 			'wipe' => T('UserWipe', 'Blank User Content'),
 			'delete' => T('UserDelete', 'Remove User Content')
 			), array('list' => TRUE)).
-		$this->Form->CheckBox('Plugins.BulkEdit.Confirm', 'Are you sure you want to remove these users?'),
+		$this->Form->CheckBox('Plugins.BulkEdit.Confirm', T('Are you sure you want to remove these users?')),
 		'div',
 		array('class' => 'BulkEditUserList Info'));
 		
-		echo $this->Form->Button('Cancel', array(
+		echo $this->Form->Button(T('Cancel'), array(
 			'Type' => 'button',
 			'onclick' => 'history.go(-1)'
 			));
-		echo $this->Form->Button('Delete Users Forever');
+		echo $this->Form->Button(T('Delete Users Forever'));
 		
 		echo $this->Form->Close();
 	}
