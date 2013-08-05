@@ -16,7 +16,7 @@
 $PluginInfo['BulkEdit'] = array(
 	'Title' => 'Bulk Edit',
 	'Description' => 'Allows for the removal of multiple users at once through the Users dashboard.', // Will Add/remove roles, remove users, set up multiple roles, all from the Users dashboard in the future
-	'Version' => '1.0',
+	'Version' => '1.1',
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'RequiredTheme' => FALSE, 
 	'RequiredPlugins' => FALSE,
@@ -104,25 +104,11 @@ class BulkEdit extends Gdn_Plugin {
 		
 		$Sender->Form->SetModel($ConfigurationModel);
 		
-		$UserModel = new UserModel();
 		if ($Sender->Form->AuthenticatedPostBack() === FALSE) {
 			// First time viewing
 			$Sender->Form->SetData($ConfigurationModel->Data);
 			
-			// gnab the data from the hacked post request
-			$Request = $Sender->Request->GetRequestArguments();
-			
-			if(empty($Request['post']['Form/Plugins-dot-BulkEdit-dot-UserIDs'])) {
-				echo '<pre>'; var_dump($Request); echo '</pre>';
-				Redirect('/dashboard/user');
-			}
-			$UserIDs = $Request['post']['Form/Plugins-dot-BulkEdit-dot-UserIDs'];
-			
-			// Get the full usermodel from the user ids and store it for the view
-			$Sender->BulkEditUsers = $UserModel->GetIDs($UserIDs);
-			
-			// Add the UserIDs to the current form in a hidden field so we can operate on them
-			$Sender->Form->AddHidden('Plugins.BulkEdit.UserIDs', json_encode($UserIDs), TRUE);
+			$this->_AddInjectedUserIDsProperly($Sender);
 		} else {
 			// Form submission handling
 			$ConfigurationModel->Validation->ApplyRule('Plugins.BulkEdit.RemoveType', 'Required');
@@ -133,6 +119,7 @@ class BulkEdit extends Gdn_Plugin {
 			$UserIDs = json_decode($Data['Plugins.BulkEdit.UserIDs']);
 			
 			// Need to have these in case the there is a validation error
+			$UserModel = new UserModel();
 			$Sender->BulkEditUsers = $UserModel->GetIDs($UserIDs);
 			$Sender->Form->AddHidden('Plugins.BulkEdit.UserIDs', $Data['Plugins.BulkEdit.UserIDs'], TRUE);
 			
@@ -148,6 +135,182 @@ class BulkEdit extends Gdn_Plugin {
 		}
 		
 		$Sender->Render($this->GetView('remove.php'));
+	}
+	
+	public function Controller_Ban($Sender) {
+		$Sender->Title('Bulk Ban Users');
+		$Sender->Permission(
+			array(
+				'Garden.Users.Edit'
+			),
+			'',
+			FALSE
+		);
+		
+		$Sender->Form = new Gdn_Form();
+		$Validation = new Gdn_Validation();
+		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
+		
+		$ConfigurationModel->SetField('Plugins.BulkEdit.Confirm');
+		$ConfigurationModel->SetField('Plugins.BulkEdit.UserIDs');
+		
+		$Sender->Form->SetModel($ConfigurationModel);
+		
+		if ($Sender->Form->AuthenticatedPostBack() === FALSE) {
+			// First time viewing
+			$Sender->Form->SetData($ConfigurationModel->Data);
+			
+			$this->_AddInjectedUserIDsProperly($Sender);
+		} else {
+			// Form submission handling
+			$ConfigurationModel->Validation->ApplyRule('Plugins.BulkEdit.Confirm', 'Required');
+        	$ConfigurationModel->Validation->ApplyRule('Plugins.BulkEdit.UserIDs', 'Required');
+        	
+			$Data = $Sender->Form->FormValues();
+			$UserIDs = json_decode($Data['Plugins.BulkEdit.UserIDs']);
+			
+			// Need to have these in case the there is a validation error
+			$UserModel = new UserModel();
+			$Sender->BulkEditUsers = $UserModel->GetIDs($UserIDs);
+			$Sender->Form->AddHidden('Plugins.BulkEdit.UserIDs', $Data['Plugins.BulkEdit.UserIDs'], TRUE);
+			
+			if ($Sender->Form->Save() !== FALSE) {
+				$Users = $UserModel->GetIDs($UserIDs);
+				// Store so we can display them
+        		$Sender->BulkEditUsers = $Users;
+				
+				$BanModel = new BanModel();
+				foreach ($Users as $User) {
+					$BanModel->SaveUser($User, TRUE);
+				}
+				$Sender->StatusMessage = T('Users have been banned!');
+				$Sender->BulkEditActionComplete = TRUE;
+			}
+		}
+		
+		$Sender->Render($this->GetView('ban.php'));
+	}
+	
+	public function Controller_Role($Sender) {
+		$Sender->Permission(
+			array(
+				'Garden.Users.Edit'
+			),
+			'',
+			FALSE
+		);
+		
+		// Figure out if we are setting, removing, or adding roles
+		$Method = strtolower($Sender->RequestArgs[1]);
+		
+		switch($Method) {
+		default:
+		case 'set':
+			$Sender->Title('Bulk Set User Roles');
+			break;
+		case 'remove':
+			$Sender->Title('Bulk Remove User Roles');
+			break;
+		case 'add':
+			$Sender->Title('Bulk Add User Roles');
+			break;
+		}
+		
+		if(in_array($Method, array('set', 'remove', 'add'))) {
+			$Sender->BulkEditAction = $Method;
+		}
+		else {
+			$Sender->BulkEditAction = 'set';
+		}
+		
+		
+		$Sender->Form = new Gdn_Form();
+		$Validation = new Gdn_Validation();
+		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
+		
+		$ConfigurationModel->SetField('Plugins.BulkEdit.UserIDs');
+		$ConfigurationModel->SetField('Plugins.BulkEdit.RoleIDs');
+		
+		// Set the role data for the view
+		$RoleModel = new RoleModel();
+		$Sender->RoleData = $RoleModel->GetArray();
+		
+		$Sender->Form->SetModel($ConfigurationModel);
+		
+		if ($Sender->Form->AuthenticatedPostBack() === FALSE) {
+			// First time viewing
+			$Sender->Form->SetData($ConfigurationModel->Data);
+			
+			$this->_AddInjectedUserIDsProperly($Sender);
+		} else {
+			// Form submission handling
+			$ConfigurationModel->Validation->ApplyRule('Plugins.BulkEdit.RoleIDs', 'Required');
+			$ConfigurationModel->Validation->ApplyRule('Plugins.BulkEdit.UserIDs', 'Required');
+        	
+			$Data = $Sender->Form->FormValues();
+			$UserIDs = json_decode($Data['Plugins.BulkEdit.UserIDs']);
+			
+			// Need to have these in case the there is a validation error
+			$UserModel = new UserModel();
+			$Sender->BulkEditUsers = $UserModel->GetIDs($UserIDs);
+			$Sender->Form->AddHidden('Plugins.BulkEdit.UserIDs', $Data['Plugins.BulkEdit.UserIDs'], TRUE);
+			
+			if ($Sender->Form->Save() !== FALSE) {
+				// Store so we can display them
+        		$Sender->BulkEditUsers = $UserModel->GetIDs($UserIDs);
+				$Sender->BulkEditRoles = array_intersect_key($Sender->RoleData, array_flip($Data['Plugins.BulkEdit.RoleIDs']));
+				
+				foreach ($UserIDs as $UserID) {
+					// Get the old roles
+					$CurrentRoleData = $UserModel->GetRoles($UserID);
+					$CurrentRoleIDs = ConsolidateArrayValuesByKey($CurrentRoleData->Result(), 'RoleID');
+					
+					switch($Method) {
+					default:
+					case 'set':
+						// Completely disregard current roles
+						$NewRoleIDs = $Data['Plugins.BulkEdit.RoleIDs'];
+						break;
+					case 'remove':
+						// Remove the selected roles
+						$NewRoleIDs = array_diff($CurrentRoleIDs, $Data['Plugins.BulkEdit.RoleIDs']);
+						break;
+					case 'add':
+						// Add our selected roles
+						$NewRoleIDs = array_unique(array_merge($CurrentRoleIDs, $Data['Plugins.BulkEdit.RoleIDs']));
+						break;
+					}
+					// Set the combined roles
+					if($NewRoleIDs != $CurrentRoleIDs) {
+						$UserModel->SaveRoles($UserID, $NewRoleIDs);
+					}
+					
+				}
+				$Sender->StatusMessage = T('Roles have been added!');
+				$Sender->BulkEditActionComplete = TRUE;
+				
+			}
+		}
+		
+		$Sender->Render($this->GetView('role.php'));
+	}
+	
+	private function _AddInjectedUserIDsProperly($Sender) {
+		// gnab the data from the hacked post request
+		$Request = $Sender->Request->GetRequestArguments();
+		
+		if(empty($Request['post']['Form/Plugins-dot-BulkEdit-dot-UserIDs'])) {
+			//echo '<pre>'; var_dump($Request); echo '</pre>';
+			Redirect('/dashboard/user');
+		}
+		$UserIDs = $Request['post']['Form/Plugins-dot-BulkEdit-dot-UserIDs'];
+		
+		// Get the full user object from the usermodel and store it for the view
+		$UserModel = new UserModel();
+		$Sender->BulkEditUsers = $UserModel->GetIDs($UserIDs);
+		
+		// Add the UserIDs to the current form in a hidden field so we can operate on them
+		$Sender->Form->AddHidden('Plugins.BulkEdit.UserIDs', json_encode($UserIDs), TRUE);
 	}
 	
 	public function Setup() {
