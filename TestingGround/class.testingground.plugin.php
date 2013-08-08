@@ -50,6 +50,7 @@ class TestingGround extends Gdn_Plugin {
 	
 	public function Base_Render_Before($Sender) {
 		$this->_AddResources($Sender);
+		// echo '<pre>'; var_dump($Sender); echo '</pre>';
 	}
 	
 	private function _AddResources($Sender) {
