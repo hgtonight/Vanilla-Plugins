@@ -16,13 +16,11 @@
 $PluginInfo['BulkInvite'] = array(
     'Title' => 'Bulk Invite',
     'Description' => 'A plugin in that provides an interface to invite users in bulk.',
-    'Version' => '0.1',
+    'Version' => '1.0',
     'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
     'HasLocale' => TRUE,
     'RequiredTheme' => FALSE,
     'RequiredPlugins' => FALSE,
-    'SettingsUrl' => '/settings/bulkinvite',
-    'SettingsPermission' => 'Garden.Settings.Manage',
     'Author' => "Zachary Doll",
     'AuthorEmail' => 'hgtonight@daklutz.com',
     'AuthorUrl' => 'http://www.daklutz.com',
@@ -31,19 +29,21 @@ $PluginInfo['BulkInvite'] = array(
 
 class BulkInvite extends Gdn_Plugin {
 
+  /**
+   * This function renders a form to send out emails to multiple addresses
+   * with a custom subject and message
+   * @param VanillaController $Sender PluginController
+   */
   public function PluginController_BulkInvite_Create($Sender) {
     $this->_AddResources($Sender);
     $Sender->Form = new Gdn_Form();
     $Sender->Permission('Garden.Settings.Manage');
 
     $Sender->SetData('Title', T('Bulk Invite Users'));
-    $Sender->SetData('Plugins.BulkInvite.Subject', T('Plugins.BulkInvite.Subject'));
-    $Sender->SetData('Plugins.BulkInvite.Message', T('Plugins.BulkInvite.Message'));
-    
     $Sender->AddSideMenu('plugin/bulkinvite');
 
     $Sender->AddDefinition('BI_Placeholder', T('Plugins.BulkInvite.EmailPlaceholder'));
-    
+
     if($Sender->Form->AuthenticatedPostBack()) {
       // Do invitations to new members.
       $Message = $Sender->Form->GetFormValue('Plugins.BulkInvite.Message');
@@ -87,16 +87,28 @@ class BulkInvite extends Gdn_Plugin {
         $Sender->InformMessage(T('Your invitations were sent successfully.'));
       }
     }
+    else {
+      // grab defaults
+      $Sender->SetData('Plugins.BulkInvite.Message', T('Plugins.BulkInvite.Message'));
+      $Sender->SetData('Plugins.BulkInvite.Subject', T('Plugins.BulkInvite.Subject'));
+    }
 
     $Sender->Render($this->GetView('bulkinvite.php'));
   }
 
-  //Add a link to the dashboard menu
+  /**
+   * Inserts a menu link in the dashboard
+   * @param mixed $Sender
+   */
   public function Base_GetAppSettingsMenuItems_Handler($Sender) {
     $Menu = &$Sender->EventArguments['SideMenu'];
     $Menu->AddLink('Users', 'Bulk Invite', 'plugin/bulkinvite', 'Garden.Settings.Manage');
   }
 
+  /**
+   * Adds the plugin resources to the passed controller
+   * @param mixed $Sender
+   */
   private function _AddResources($Sender) {
     $Sender->AddJsFile($this->GetResource('js/bulkinvite.js', FALSE, FALSE));
     $Sender->AddCssFile($this->GetResource('design/bulkinvite.css', FALSE, FALSE));

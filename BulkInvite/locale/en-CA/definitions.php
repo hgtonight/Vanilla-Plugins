@@ -1,4 +1,5 @@
 <?php if (!defined('APPLICATION')) exit();
+/* Copyright 2013 Zachary Doll */
 $Definition['Plugins.BulkInvite.Subject'] = 'Check out my sweet community!';
 $Definition['Plugins.BulkInvite.Message'] = 'Heya!
       
