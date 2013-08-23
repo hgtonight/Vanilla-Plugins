@@ -57,6 +57,6 @@ echo $this->Form->Close();
   </div>
   <?php
   echo Wrap('Find this plugin helpful? Want to support a freelance developer?<br/>Click the donate button to buy me a beer. :D', 'div', array('class' => 'Info'));
-  echo Wrap('Confused by something? Check out the feedback thread on the official <a href="http://vanillaforums.org/discussions" target="_blank">Vanilla forums</a>.', 'div', array('class' => 'Info'));
+  echo Wrap('Confused by something? Check out the feedback thread on the official <a href="http://vanillaforums.org/discussion/24686/feedback-for-bulk-invite" target="_blank">Vanilla forums</a>.', 'div', array('class' => 'Info'));
   ?>
 </div>
