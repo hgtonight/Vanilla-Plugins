@@ -20,13 +20,17 @@ echo $this->Form->Errors();
 
 echo Wrap(
         Wrap(
-                $this->Form->Label(T('Recipients E-mail Addresses'), 'Recipients') .
-                Wrap(T('Separate email addresses with a comma (,)'), 'div', array('class' => 'Info')) .
-                $this->Form->TextBox('Recipients', array('Multiline' => TRUE, 'class' => 'RecipientBox')), 'li') .
+                $this->Form->Label(T('Invitation Subject Line'), 'Plugins.BulkInvite.Subject') .
+                Wrap(T('This will be sent as the email subject'), 'div', array('class' => 'Info')) .
+                $this->Form->TextBox('Plugins.BulkInvite.Subject', array('id' => 'BI_Subject', 'value' => $this->Data['Plugins.BulkInvite.Subject'])), 'li') .
         Wrap(
-                $this->Form->Label(T('Invitation Message'), 'InvitationMessage') .
+                $this->Form->Label(T('Recipients E-mail Addresses'), 'Plugins.BulkInvite.Recipients') .
+                Wrap(T('Separate email addresses with a comma (,)'), 'div', array('class' => 'Info')) .
+                $this->Form->TextBox('Plugins.BulkInvite.Recipients', array('Multiline' => TRUE, 'id' => 'BI_Recipients')), 'li') .
+        Wrap(
+                $this->Form->Label(T('Invitation Message'), 'Plugins.BulkInvite.Message') .
                 Wrap(T('This message, along with your website\'s URL will be sent to each address entered above'), 'div', array('class' => 'Info')) .
-                $this->Form->TextBox('InvitationMessage', array('Multiline' => TRUE, 'class' => 'Message', 'value' => $this->Data['InviteMessage'])), 'li'), 'ul');
+                $this->Form->TextBox('Plugins.BulkInvite.Message', array('Multiline' => TRUE, 'class' => 'Message', 'id' => 'BI_Message', 'value' => $this->Data['Plugins.BulkInvite.Message'])), 'li'), 'ul');
 
 echo $this->Form->Button(T('Send Invites!'));
 echo $this->Form->Close();

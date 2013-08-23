@@ -1,7 +1,7 @@
 /* Copyright 2013 Zachary Doll */
 $(function() {
-  var PlaceHolderText = gdn.definition('TextEnterEmails');
-  var EmailInput = $('textarea.RecipientBox');
+  var PlaceHolderText = gdn.definition('BI_Placeholder');
+  var EmailInput = $('#BI_Recipients');
   if ($(EmailInput).val() === '') {
     $(EmailInput).val(PlaceHolderText);
   }

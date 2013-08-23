@@ -18,6 +18,7 @@ $PluginInfo['BulkInvite'] = array(
     'Description' => 'A plugin in that provides an interface to invite users in bulk.',
     'Version' => '0.1',
     'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
+    'HasLocale' => TRUE,
     'RequiredTheme' => FALSE,
     'RequiredPlugins' => FALSE,
     'SettingsUrl' => '/settings/bulkinvite',
@@ -36,39 +37,40 @@ class BulkInvite extends Gdn_Plugin {
     $Sender->Permission('Garden.Settings.Manage');
 
     $Sender->SetData('Title', T('Bulk Invite Users'));
-    $Sender->SetData('InviteMessage', T('Hi Pal!
-      
-Check out the new community forum I\'ve just set up. It\'s a great place for us to chat with each other online.
-    
-Follow the link below to log in.'));
+    $Sender->SetData('Plugins.BulkInvite.Subject', T('Plugins.BulkInvite.Subject'));
+    $Sender->SetData('Plugins.BulkInvite.Message', T('Plugins.BulkInvite.Message'));
     
     $Sender->AddSideMenu('plugin/bulkinvite');
 
-    $Sender->AddDefinition('TextEnterEmails', T('TextEnterEmails', 'Type email addresses separated by commas here'));
+    $Sender->AddDefinition('BI_Placeholder', T('Plugins.BulkInvite.EmailPlaceholder'));
     
     if($Sender->Form->AuthenticatedPostBack()) {
       // Do invitations to new members.
-      $Message = $Sender->Form->GetFormValue('InvitationMessage');
+      $Message = $Sender->Form->GetFormValue('Plugins.BulkInvite.Message');
       $Message .= "\n\n" . Gdn::Request()->Url('/', TRUE);
       $Message = trim($Message);
-      $Recipients = $Sender->Form->GetFormValue('Recipients');
-      if($Recipients == $Sender->TextEnterEmails)
+      $Subject = $Sender->Form->GetFormValue('Plugins.BulkInvite.Subject', T('Plugins.BulkInvite.Subject'));
+      $Recipients = $Sender->Form->GetFormValue('Plugins.BulkInvite.Recipients');
+      if($Recipients == T('Plugins.BulkInvite.EmailPlaceholder')) {
         $Recipients = '';
+      }
 
       $Recipients = explode(',', $Recipients);
       $CountRecipients = 0;
       foreach($Recipients as $Recipient) {
         if(trim($Recipient) != '') {
           $CountRecipients++;
-          if(!ValidateEmail($Recipient))
+          if(!ValidateEmail(trim($Recipient))) {
             $Sender->Form->AddError(sprintf(T('%s is not a valid email address'), $Recipient));
+          }
         }
       }
-      if($CountRecipients == 0)
+      if($CountRecipients == 0) {
         $Sender->Form->AddError(T('You must provide at least one recipient'));
+      }
       if($Sender->Form->ErrorCount() == 0) {
         $Email = new Gdn_Email();
-        $Email->Subject(T('Check out my new community!'));
+        $Email->Subject($Subject);
         $Email->Message($Message);
         foreach($Recipients as $Recipient) {
           if(trim($Recipient) != '') {
@@ -81,8 +83,9 @@ Follow the link below to log in.'));
           }
         }
       }
-      if($Sender->Form->ErrorCount() == 0)
+      if($Sender->Form->ErrorCount() == 0) {
         $Sender->InformMessage(T('Your invitations were sent successfully.'));
+      }
     }
 
     $Sender->Render($this->GetView('bulkinvite.php'));
