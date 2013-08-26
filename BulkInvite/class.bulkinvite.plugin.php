@@ -95,10 +95,12 @@ class BulkInvite extends Gdn_Plugin {
       // Send out invite emails only if all addresses entered are valid
       if($Sender->Form->ErrorCount() == 0) {
         $Email = new Gdn_Email();
-        $Email->Subject($Subject);
 
         foreach($Recipients as $Recipient) {
           if($Recipient != '') {
+            // reset email object
+            $Email->Clear();
+            $Email->Subject($Subject);
             $InviteCode = FALSE;
             // Append an invite code or the forums url
             if($SendInvite) {
