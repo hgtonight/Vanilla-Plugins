@@ -17,8 +17,8 @@
        color-interpolation-filters="sRGB"
        id="filter3755">
       <feGaussianBlur
-         id="feGaussianBlur3757"
-         stdDeviation="0.64" />
+         stdDeviation="0.64"
+         id="feGaussianBlur3757" />
     </filter>
   </defs>
   <metadata
@@ -61,7 +61,7 @@
      id="path3949"
      style="fill:none;stroke:#e6e6e6;stroke-width:3.49737811;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
   <path
-     d="m 33.111643,27.045561 c -0.348029,-0.431705 -0.546465,-0.83423 -0.546465,-1.202223 0,-2.816204 4.562985,-3.672073 4.562985,-12.186177 0,-5.3704351 -8.470212,-5.4919763 -8.470212,-5.4919763 0,0 -8.470213,0.1215412 -8.470213,5.4919763 0,8.514104 4.562986,9.369973 4.562986,12.186177 0,2.816203 -11.721682,8.005717 -11.721682,8.005717 l 0,4.781571 9.891023,0"
+     d="m 33.111643,27.045561 c -0.348029,-0.431705 -0.546465,-0.83423 -0.546465,-1.202223 0,-2.816204 4.562985,-3.672073 4.562985,-12.186177 0,-5.3704351 -8.470212,-5.4919763 -8.470212,-5.4919763 0,0 -8.470213,0.1215412 -8.470213,5.4919763 0,8.514104 4.562986,9.369973 4.562986,12.186177 0,2.816203 -11.721682,8.005717 -11.721682,8.005717 l 0,4.781571 11.063252,0"
      id="path3946"
      style="fill:none;stroke:#333333;stroke-width:1.74868906;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
   <path
