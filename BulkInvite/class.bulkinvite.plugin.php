@@ -74,11 +74,12 @@ class BulkInvite extends Gdn_Plugin {
         $Recipients = '';
       }
 
-      // Split up the user input on commas and validate the email addresses
-      $Recipients = explode(',', $Recipients);
+      // Split up the user input on commas and trim up the whitespace
+      $Recipients = array_map(trim, explode(',', $Recipients));
       $CountRecipients = 0;
-      foreach($Recipients as &$Recipient) {
-        $Recipient = trim($Recipient);
+      
+      // Validate the email addresses and get a total count
+      foreach($Recipients as $Recipient) {
         if($Recipient != '') {
           $CountRecipients++;
           if(!ValidateEmail($Recipient)) {
@@ -95,28 +96,27 @@ class BulkInvite extends Gdn_Plugin {
       if($Sender->Form->ErrorCount() == 0) {
         $Email = new Gdn_Email();
         $Email->Subject($Subject);
-        
+
         foreach($Recipients as $Recipient) {
           if($Recipient != '') {
+            $InviteCode = FALSE;
             // Append an invite code or the forums url
             if($SendInvite) {
               $InviteCode = $this->CreateInvite($Sender, $Recipient);
+              if($InviteCode == FALSE) {
+                break;
+              }
               $Email->Message($Message . "\n\n" . ExternalUrl("entry/register/{$InviteCode}"));
             }
             else {
               $Email->Message($Message . "\n\n" . Gdn::Request()->Url('/', TRUE));
             }
-            
-            if($InviteCode != FALSE || !$SendInvite) {
-              $Email->To($Recipient);
-              try {
-                $Email->Send();
-              } catch(Exception $ex) {
-                $Sender->Form->AddError($ex);
-              }
-            }
-            else {
-              $Sender->Form->AddError('A user or invite is already associated with ' . $Recipient . '.');
+
+            $Email->To($Recipient);
+            try {
+              $Email->Send();
+            } catch(Exception $ex) {
+              $Sender->Form->AddError($ex);
             }
           }
         }
@@ -162,14 +162,14 @@ class BulkInvite extends Gdn_Plugin {
     // Make sure that the email does not already belong to an account in the application.
     $ExistingAccount = static::$UserModel->GetWhere(array('Email' => $EmailAddress));
     if($ExistingAccount->NumRows() > 0) {
-      $Sender->Validation->AddValidationResult('Email', $EmailAddress . ' is already related to an existing account.');
+      $Sender->Form->AddError($EmailAddress . ' is already related to an existing account.');
       return FALSE;
     }
 
     // Make sure that the email does not already belong to an invitation in the application.
     $ExistingInvite = static::$InviteModel->GetWhere(array('Email' => $EmailAddress));
     if($ExistingInvite->NumRows() > 0) {
-      $Sender->Validation->AddValidationResult('Email', 'An invitation has already been sent to ' . $EmailAddress . '.');
+      $Sender->Form->AddError('An invitation has already been sent to ' . $EmailAddress . '.');
       return FALSE;
     }
     
