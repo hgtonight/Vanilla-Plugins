@@ -38,7 +38,10 @@ echo Wrap(
         Wrap(
                 $this->Form->Label(T('Invitation Message'), 'Plugins.BulkInvite.Message') .
                 Wrap(T('This message, along with your website\'s URL will be sent to each address entered above'), 'div', array('class' => 'Info')) .
-                $this->Form->TextBox('Plugins.BulkInvite.Message', array_merge(array('Multiline' => TRUE, 'class' => 'Message', 'id' => 'BI_Message'), $Message)), 'li'), 'ul');
+                $this->Form->TextBox('Plugins.BulkInvite.Message', array_merge(array('Multiline' => TRUE, 'class' => 'Message', 'id' => 'BI_Message'), $Message)), 'li') .
+        Wrap(
+                $this->Form->Label(T('Invitation Code'), 'Plugins.BulkInvite.SendInviteCode') .
+                $this->Form->CheckBox('Plugins.BulkInvite.SendInviteCode', T('Should an invitation code be created and sent with your message?'), array('id' => 'BI_SendInviteCode')), 'li'), 'ul');
 
 echo $this->Form->Button(T('Send Invites!'));
 echo $this->Form->Close();
