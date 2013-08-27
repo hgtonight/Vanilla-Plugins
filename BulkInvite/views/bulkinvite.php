@@ -15,7 +15,7 @@
  */
 echo Wrap(T($this->Data['Title']), 'h1');
 
-echo $this->Form->Open();
+echo $this->Form->Open(array('action' => Url('/plugin/bulkinvite')));
 echo $this->Form->Errors();
 
 $Subject = array();
@@ -45,6 +45,55 @@ echo Wrap(
 
 echo $this->Form->Button(T('Send Invites!'));
 echo $this->Form->Close();
+
+if($this->InvitationData->NumRows() > 0) {
+  ?>
+  <table class="PendingInvites AltRows">
+    <thead>
+      <tr>
+        <th><?php echo T('Invitation Code'); ?></th>
+        <th class="Alt"><?php echo T('Sent To'); ?></th>
+        <th><?php echo T('On'); ?></th>
+        <th class="Alt"><?php echo T('Status'); ?></th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php
+      $Session = Gdn::Session();
+      $Alt = FALSE;
+      foreach($this->InvitationData->Format('Text')->Result() as $Invitation) {
+        $Alt = $Alt == TRUE ? FALSE : TRUE;
+        ?>
+        <tr<?php echo ($Alt ? ' class="Alt"' : ''); ?>>
+          <td><?php echo $Invitation->Code; ?></td>
+          <td class="Alt"><?php
+            if($Invitation->AcceptedName == '')
+              echo $Invitation->Email;
+            else
+              echo Anchor($Invitation->AcceptedName, '/profile/' . $Invitation->AcceptedUserID);
+
+            if($Invitation->AcceptedName == '') {
+              echo '<div>'
+              . Anchor(T('Uninvite'), '/plugin/bulkinvite/uninvite/' . $Invitation->InvitationID . '/' . $Session->TransientKey(), 'Uninvite')
+              . ' | ' . Anchor(T('Send Again'), '/plugin/bulkinvite/sendinvite/' . $Invitation->InvitationID . '/' . $Session->TransientKey(), 'SendAgain')
+              . '</div>';
+            }
+            ?></td>
+          <td><?php echo Gdn_Format::Date($Invitation->DateInserted); ?></td>
+          <td class="Alt"><?php
+            if($Invitation->AcceptedName == '') {
+              echo T('Pending');
+            }
+            else {
+              echo T('Accepted');
+            }
+            ?></td>
+        </tr>
+  <?php } ?>
+    </tbody>
+  </table>
+  <?php
+}
 ?>
 <div class="Footer">
   <?php

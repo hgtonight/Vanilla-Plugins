@@ -45,20 +45,22 @@ class BulkInvite extends Gdn_Plugin {
   }
 
   /**
-   * This function renders a form to send out emails to multiple addresses
-   * with a custom subject and message
-   * @param VanillaController $Sender PluginController
+   * Create a minicontroller to handle bypassing the invite model
+   * @param PluginController $Sender
    */
   public function PluginController_BulkInvite_Create($Sender) {
-    $this->_AddResources($Sender);
+    $this->Dispatch($Sender, $Sender->RequestArgs);
+  }
+
+  /**
+   * This function renders a form to send out emails to multiple addresses
+   * with a custom subject and message
+   * @param PluginController $Sender
+   */
+  public function Controller_Index($Sender) {
     $Sender->Form = new Gdn_Form();
     $Sender->Validation = new Gdn_Validation();
     $Sender->Permission('Garden.Settings.Manage');
-
-    $Sender->SetData('Title', T('Bulk Invite Users'));
-    $Sender->AddSideMenu('plugin/bulkinvite');
-
-    $Sender->AddDefinition('BI_Placeholder', T('Plugins.BulkInvite.EmailPlaceholder'));
 
     if($Sender->Form->AuthenticatedPostBack()) {
       // TODO: Do I need to sanitize the message field?
@@ -128,15 +130,66 @@ class BulkInvite extends Gdn_Plugin {
         $Sender->InformMessage(T('Your invitations were sent successfully.'));
       }
     }
-    else {
-      // grab defaults
-      $Sender->SetData('Plugins.BulkInvite.Message', T('Plugins.BulkInvite.Message'));
-      $Sender->SetData('Plugins.BulkInvite.Subject', T('Plugins.BulkInvite.Subject'));
-    }
 
-    $Sender->Render($this->GetView('bulkinvite.php'));
+    $this->_PseudoRender($Sender);
   }
 
+  /**
+   * This function bypasses the normal permissions required to remove invites
+   * through the invite model, but only from the configured user
+   * @param PluginController $Sender
+   */
+  public function Controller_UnInvite($Sender) {
+    $Sender->Permission('Garden.Settings.Manage');
+    $InviteID = $Sender->RequestArgs[1];
+    $TransientKey = $Sender->RequestArgs[2];
+    if(Gdn::Session()->ValidateTransientKey($TransientKey)) {
+      $this->SQL->Delete('Invitation', array(
+          'InvitationID' => $InviteID,
+          'InsertUserID' => C('Plugins.BulkInvite.InsertUserID', 1)
+              )
+      );
+      $Sender->InformMessage(T('Invitation removed successfully.'));
+    }
+    $this->_PseudoRender($Sender);
+  }
+  
+  /**
+   * Resends an invite message with the default invitation message
+   * @param type $Sender
+   */
+  public function Controller_SendInvite($Sender) {
+    $Sender->Permission('Garden.Settings.Manage');
+    $InviteID = $Sender->RequestArgs[1];
+    $TransientKey = $Sender->RequestArgs[2];
+    if(Gdn::Session()->ValidateTransientKey($TransientKey)) {
+      $Invitation = static::$InviteModel->GetByInvitationID($InviteID);
+      $RegistrationUrl = ExternalUrl("entry/register/{$Invitation->Code}");
+      $AppTitle = Gdn::Config('Garden.Title');
+      $Email = new Gdn_Email();
+      $Email->Subject(sprintf(T('[%s] Invitation'), $AppTitle));
+      $Email->To($Invitation->Email);
+      $Email->Message(
+         sprintf(
+            T('EmailInvitation'),
+            $Invitation->SenderName,
+            $AppTitle,
+            $RegistrationUrl
+         )
+      );
+      
+      try {
+        $Email->Send();
+      } catch(Exception $ex) {
+        $Sender->Form->AddError($ex);
+      }
+      if($Sender->Form->ErrorCount() == 0) {
+        $Sender->InformMessage(T('An invitation message was resent to '. $Invitation->Email. ' successfully.'));
+      }
+    }
+    $this->_PseudoRender($Sender);
+  }
+  
   /**
    * Inserts a menu link in the dashboard
    * @param mixed $Sender
@@ -144,15 +197,6 @@ class BulkInvite extends Gdn_Plugin {
   public function Base_GetAppSettingsMenuItems_Handler($Sender) {
     $Menu = &$Sender->EventArguments['SideMenu'];
     $Menu->AddLink('Users', 'Bulk Invite', 'plugin/bulkinvite', 'Garden.Settings.Manage');
-  }
-
-  /**
-   * Adds the plugin resources to the passed controller
-   * @param mixed $Sender
-   */
-  private function _AddResources($Sender) {
-    $Sender->AddJsFile($this->GetResource('js/bulkinvite.js', FALSE, FALSE));
-    $Sender->AddCssFile($this->GetResource('design/bulkinvite.css', FALSE, FALSE));
   }
    
   /**
@@ -183,13 +227,31 @@ class BulkInvite extends Gdn_Plugin {
             ->Insert('Invitation', array(
                       'Email' => $EmailAddress,
                       'Code' => $GeneratedCode,
-                      'InsertUserID' => C('Plugins.BulkEdit.InsertUserID', 1),
+                      'InsertUserID' => C('Plugins.BulkInvite.InsertUserID', 1),
                       'DateInserted' => date('Y-m-d H:i:s'))
           );
 
     return $GeneratedCode;
   }
 
+  /**
+   * Renders the mini controller consistently
+   * @param PluginController $Sender
+   */
+  public function _PseudoRender($Sender) {
+    $Sender->AddJsFile($this->GetResource('js/bulkinvite.js', FALSE, FALSE));
+    $Sender->AddCssFile($this->GetResource('design/bulkinvite.css', FALSE, FALSE));
+    $Sender->SetData('Title', T('Bulk Invite Users'));
+    $Sender->InvitationData = static::$InviteModel->GetByUserID(C('Plugins.BulkInvite.InsertUserID', 1));
+    if(!$Sender->Form->AuthenticatedPostBack()) {
+      $Sender->SetData('Plugins.BulkInvite.Message', T('Plugins.BulkInvite.Message'));
+      $Sender->SetData('Plugins.BulkInvite.Subject', T('Plugins.BulkInvite.Subject'));
+    }
+    $Sender->AddDefinition('BI_Placeholder', T('Plugins.BulkInvite.EmailPlaceholder'));
+    $Sender->AddSideMenu('plugin/bulkinvite');
+    $Sender->Render($this->GetView('bulkinvite.php'));
+  }
+  
   public function Setup() {
     // SaveToConfig('Plugins.BulkInvite.EnableAdvancedMode', TRUE);
   }
