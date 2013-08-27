@@ -16,7 +16,7 @@
 $PluginInfo['BulkInvite'] = array(
     'Title' => 'Bulk Invite',
     'Description' => 'A plugin in that provides an interface to invite users in bulk. It optionally sends an invitation registration code.',
-    'Version' => '1.1',
+    'Version' => '1.2',
     'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
     'HasLocale' => TRUE,
     'RequiredTheme' => FALSE,
@@ -50,6 +50,7 @@ class BulkInvite extends Gdn_Plugin {
    */
   public function PluginController_BulkInvite_Create($Sender) {
     $this->Dispatch($Sender, $Sender->RequestArgs);
+    $this->_PseudoRender($Sender);
   }
 
   /**
@@ -130,8 +131,6 @@ class BulkInvite extends Gdn_Plugin {
         $Sender->InformMessage(T('Your invitations were sent successfully.'));
       }
     }
-
-    $this->_PseudoRender($Sender);
   }
 
   /**
@@ -151,12 +150,11 @@ class BulkInvite extends Gdn_Plugin {
       );
       $Sender->InformMessage(T('Invitation removed successfully.'));
     }
-    $this->_PseudoRender($Sender);
   }
   
   /**
    * Resends an invite message with the default invitation message
-   * @param type $Sender
+   * @param PluginController $Sender
    */
   public function Controller_SendInvite($Sender) {
     $Sender->Permission('Garden.Settings.Manage');
@@ -187,7 +185,6 @@ class BulkInvite extends Gdn_Plugin {
         $Sender->InformMessage(T('An invitation message was resent to '. $Invitation->Email. ' successfully.'));
       }
     }
-    $this->_PseudoRender($Sender);
   }
   
   /**
@@ -221,7 +218,8 @@ class BulkInvite extends Gdn_Plugin {
     }
     
     // Generate a unique invitation code
-    $GeneratedCode = $this->_GetInvitationCode(); //'TODOlolo'
+    $GeneratedCode = $this->_GetInvitationCode();
+    
     // insert the invite
     $this->SQL
             ->Insert('Invitation', array(
@@ -235,7 +233,7 @@ class BulkInvite extends Gdn_Plugin {
   }
 
   /**
-   * Renders the mini controller consistently
+   * Renders all methods on the mini controller consistently
    * @param PluginController $Sender
    */
   public function _PseudoRender($Sender) {
@@ -251,9 +249,12 @@ class BulkInvite extends Gdn_Plugin {
     $Sender->AddSideMenu('plugin/bulkinvite');
     $Sender->Render($this->GetView('bulkinvite.php'));
   }
-  
+
   public function Setup() {
-    // SaveToConfig('Plugins.BulkInvite.EnableAdvancedMode', TRUE);
+    // Default to the system account in 2.1+
+    if(version_compare(APPLICATION_VERSION, '2.1b1', '>=')) {
+      SaveToConfig('Plugins.BulkInvite.InsertUserID', 2);
+    }
   }
 
   public function OnDisable() {
