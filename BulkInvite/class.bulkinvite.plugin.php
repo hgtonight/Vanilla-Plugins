@@ -183,10 +183,9 @@ class BulkInvite extends Gdn_Plugin {
             ->Insert('Invitation', array(
                       'Email' => $EmailAddress,
                       'Code' => $GeneratedCode,
-                      'InsertUserID' => 0,
+                      'InsertUserID' => C('Plugins.BulkEdit.InsertUserID', 1),
                       'DateInserted' => date('Y-m-d H:i:s'))
           );
-    //("insert GDN_ (`Email`, `Code`, `InsertUserID`, `DateInserted`) values ('hgtonight+moar@gmail.com', '5AHJVXG8', '241', '2013-08-26 15:56:12');")->Put();
 
     return $GeneratedCode;
   }
