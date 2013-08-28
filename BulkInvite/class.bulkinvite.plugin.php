@@ -16,7 +16,7 @@
 $PluginInfo['BulkInvite'] = array(
     'Title' => 'Bulk Invite',
     'Description' => 'A plugin in that provides an interface to invite users in bulk. It optionally sends an invitation registration code.',
-    'Version' => '1.2',
+    'Version' => '1.2.1',
     'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
     'HasLocale' => TRUE,
     'RequiredTheme' => FALSE,
@@ -29,18 +29,14 @@ $PluginInfo['BulkInvite'] = array(
 
 class BulkInvite extends Gdn_Plugin {
 
-  protected static $UserModel;
-  protected static $InviteModel;
-  public $SQL;
+  protected $_UserModel;
+  protected $_InviteModel;
+  protected $_SQL;
   
   public function __construct() {
-    if(!self::$UserModel) {
-      self::$UserModel = new UserModel();
-    }
-    if(!self::$InviteModel) {
-      self::$InviteModel = new InvitationModel();
-    }
-    $this->SQL = Gdn::Database()->SQL();
+    $this->_UserModel = new UserModel();
+    $this->_InviteModel = new InvitationModel();
+    $this->_SQL = Gdn::Database()->SQL();
     parent::__construct();
   }
 
@@ -68,7 +64,7 @@ class BulkInvite extends Gdn_Plugin {
       $Message = $Sender->Form->GetFormValue('Plugins.BulkInvite.Message');
       $Message = trim($Message);
       
-      $SendInvite = $Sender->Form->GetFormValue('Plugins.BulkInvite.SendInviteCode');
+      $SendCode = $Sender->Form->GetFormValue('Plugins.BulkInvite.SendInviteCode');
       
       $Subject = $Sender->Form->GetFormValue('Plugins.BulkInvite.Subject', T('Plugins.BulkInvite.Subject'));
       $Recipients = $Sender->Form->GetFormValue('Plugins.BulkInvite.Recipients');
@@ -99,31 +95,44 @@ class BulkInvite extends Gdn_Plugin {
       if($Sender->Form->ErrorCount() == 0) {
         $Email = new Gdn_Email();
 
-        foreach($Recipients as $Recipient) {
-          if($Recipient != '') {
-            // reset email object
-            $Email->Clear();
-            $Email->Subject($Subject);
-            $InviteCode = FALSE;
-            // Append an invite code or the forums url
-            if($SendInvite) {
+        // Have to send out emails individually if there are invite codes
+        if($SendCode) {
+          foreach($Recipients as $Recipient) {
+            if($Recipient != '') {
+              // reset email object
+              $Email->Clear();
+              $Email->Subject($Subject);
+              
+              // Append an invite code or the forums url
               $InviteCode = $this->CreateInvite($Sender, $Recipient);
               if($InviteCode == FALSE) {
                 $Email->Clear();
                 break;
               }
               $Email->Message($Message . "\n\n" . ExternalUrl("entry/register/{$InviteCode}"));
-            }
-            else {
-              $Email->Message($Message . "\n\n" . Gdn::Request()->Url('/', TRUE));
-            }
 
-            $Email->To($Recipient);
-            try {
-              $Email->Send();
-            } catch(Exception $ex) {
-              $Sender->Form->AddError($ex);
+              $Email->To($Recipient);
+              try {
+                $Email->Send();
+              } catch(Exception $ex) {
+                $Sender->Form->AddError($ex);
+              }
             }
+          }
+        }
+        else {
+          // Can use Bcc since the message is exactly the same
+          foreach($Recipients as $Recipient) {
+            if($Recipient != '') {
+              $Email->Subject($Subject);
+              $Email->Message($Message . "\n\n" . Gdn::Request()->Url('/', TRUE));
+              $Email->Bcc($Recipient);
+            }
+          }
+          try {
+            $Email->Send();
+          } catch(Exception $ex) {
+            $Sender->Form->AddError($ex);
           }
         }
       }
@@ -143,7 +152,7 @@ class BulkInvite extends Gdn_Plugin {
     $InviteID = $Sender->RequestArgs[1];
     $TransientKey = $Sender->RequestArgs[2];
     if(Gdn::Session()->ValidateTransientKey($TransientKey)) {
-      $this->SQL->Delete('Invitation', array(
+      $this->_SQL->Delete('Invitation', array(
           'InvitationID' => $InviteID,
           'InsertUserID' => C('Plugins.BulkInvite.InsertUserID', 1)
               )
@@ -161,7 +170,7 @@ class BulkInvite extends Gdn_Plugin {
     $InviteID = $Sender->RequestArgs[1];
     $TransientKey = $Sender->RequestArgs[2];
     if(Gdn::Session()->ValidateTransientKey($TransientKey)) {
-      $Invitation = static::$InviteModel->GetByInvitationID($InviteID);
+      $Invitation = $this->_InviteModel->GetByInvitationID($InviteID);
       $RegistrationUrl = ExternalUrl("entry/register/{$Invitation->Code}");
       $AppTitle = Gdn::Config('Garden.Title');
       $Email = new Gdn_Email();
@@ -204,14 +213,14 @@ class BulkInvite extends Gdn_Plugin {
    */
   public function CreateInvite($Sender, $EmailAddress) {
     // Make sure that the email does not already belong to an account in the application.
-    $ExistingAccount = static::$UserModel->GetWhere(array('Email' => $EmailAddress));
+    $ExistingAccount = $this->_UserModel->GetWhere(array('Email' => $EmailAddress));
     if($ExistingAccount->NumRows() > 0) {
       $Sender->Form->AddError($EmailAddress . ' is already related to an existing account.');
       return FALSE;
     }
 
     // Make sure that the email does not already belong to an invitation in the application.
-    $ExistingInvite = static::$InviteModel->GetWhere(array('Email' => $EmailAddress));
+    $ExistingInvite = $this->_InviteModel->GetWhere(array('Email' => $EmailAddress));
     if($ExistingInvite->NumRows() > 0) {
       $Sender->Form->AddError('An invitation has already been sent to ' . $EmailAddress . '.');
       return FALSE;
@@ -221,7 +230,7 @@ class BulkInvite extends Gdn_Plugin {
     $GeneratedCode = $this->_GetInvitationCode();
     
     // insert the invite
-    $this->SQL
+    $this->_SQL
             ->Insert('Invitation', array(
                       'Email' => $EmailAddress,
                       'Code' => $GeneratedCode,
@@ -240,7 +249,7 @@ class BulkInvite extends Gdn_Plugin {
     $Sender->AddJsFile($this->GetResource('js/bulkinvite.js', FALSE, FALSE));
     $Sender->AddCssFile($this->GetResource('design/bulkinvite.css', FALSE, FALSE));
     $Sender->SetData('Title', T('Bulk Invite Users'));
-    $Sender->InvitationData = static::$InviteModel->GetByUserID(C('Plugins.BulkInvite.InsertUserID', 1));
+    $Sender->InvitationData = $this->_InviteModel->GetByUserID(C('Plugins.BulkInvite.InsertUserID', 1));
     if(!$Sender->Form->AuthenticatedPostBack()) {
       $Sender->SetData('Plugins.BulkInvite.Message', T('Plugins.BulkInvite.Message'));
       $Sender->SetData('Plugins.BulkInvite.Subject', T('Plugins.BulkInvite.Subject'));
@@ -269,7 +278,7 @@ class BulkInvite extends Gdn_Plugin {
     $Code = RandomString(8);
 
     // Make sure the string doesn't already exist in the invitation table
-    $CodeData = static::$InviteModel->GetWhere(array('Code' => $Code));
+    $CodeData = $this->_InviteModel->GetWhere(array('Code' => $Code));
     if($CodeData->NumRows() > 0) {
       return $this->_GetInvitationCode();
     }
