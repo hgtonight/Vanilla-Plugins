@@ -70,7 +70,7 @@ if($this->InvitationData->NumRows() > 0) {
             if($Invitation->AcceptedName == '')
               echo $Invitation->Email;
             else
-              echo Anchor($Invitation->AcceptedName, '/profile/' . $Invitation->AcceptedUserID);
+              echo Anchor($Invitation->AcceptedName, '/profile/' . $Invitation->AcceptedUserID . '/'. rawurlencode($Invitation->AcceptedName));
 
             if($Invitation->AcceptedName == '') {
               echo '<div>'
