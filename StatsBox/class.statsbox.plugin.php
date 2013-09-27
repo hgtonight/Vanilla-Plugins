@@ -14,121 +14,117 @@
 *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 $PluginInfo['StatsBox'] = array(
-	'Name' => 'Stats Box',
-	'Description' => 'Adds a stats box to the discussions list that shows the total comments, views, and follows. Inspired on Voting by Mark O\'Sullivan.',
-	'Version' => '1.3',
-	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
-	'SettingsUrl' => '/settings/statsbox',
-	'SettingsPermission' => 'Garden.Settings.Manage',
-	'Author' => 'Zachary Doll',
-	'AuthorEmail' => 'hgtonight@daklutz.com',
-	'AuthorUrl' => 'http://www.daklutz.com',
-	'License' => 'GPLv3'
+    'Name' => 'Stats Box',
+    'Description' => 'Adds a stats box to the discussions list that shows the total comments, views, and follows. Inspired on Voting by Mark O\'Sullivan.',
+    'Version' => '1.4',
+    'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
+    'SettingsUrl' => '/settings/statsbox',
+    'SettingsPermission' => 'Garden.Settings.Manage',
+    'Author' => 'Zachary Doll',
+    'AuthorEmail' => 'hgtonight@daklutz.com',
+    'AuthorUrl' => 'http://www.daklutz.com',
+    'License' => 'GPLv3'
 );
 
 class StatsBoxPlugin extends Gdn_Plugin {
 
-	private function AddResources($Sender) {
-		if(C('Plugins.StatsBox.DisableCSS', FALSE) == FALSE) {
-			$Sender->AddCSSFile($this->GetResource('design/statsbox.css', FALSE, FALSE));
-		}
-	}
-	
-	private function RenderStatsBox($Sender) {
-		$Discussion = GetValue('Discussion', $Sender->EventArguments);
-		$String = '';
-		
-		if(C('Plugins.StatsBox.HideComments', FALSE) == FALSE) {
-			$String .= Wrap(
-				Wrap(T('Comments')) . Gdn_Format::BigNumber($Discussion->CountComments),
-				'span',
-				array('class' => 'StatsBox AnswersBox'));
-		}
-		
-		if(C('Plugins.StatsBox.HideViews', FALSE) == FALSE) {
-			$String .= Wrap(
-				Wrap(T('Views')) . Gdn_Format::BigNumber($Discussion->CountViews),
-				'span',
-				array('class' => 'StatsBox ViewsBox'));
-		}
+  private function AddResources($Sender) {
+    if(C('Plugins.StatsBox.DisableCSS', FALSE) == FALSE) {
+      $Sender->AddCSSFile($this->GetResource('design/statsbox.css', FALSE, FALSE));
+    }
+  }
 
-		
-		if(C('Plugins.StatsBox.HideFollows', FALSE) == FALSE) {
-			if (!is_numeric($Discussion->CountBookmarks)) {
-				$Discussion->CountBookmarks = 0;
-			}
-			$BookmarkAction = T($Discussion->Bookmarked == '1' ? 'Unbookmark' : 'Bookmark');
-			$Session = Gdn::Session();
-			if ($Session->IsValid()) {
-				$String .= Wrap(
-					Anchor(
-						Wrap(T('Follows')) . Gdn_Format::BigNumber($Discussion->CountBookmarks),
-						'/vanilla/discussion/bookmark/'.$Discussion->DiscussionID.'/'.$Session->TransientKey().'?Target='.urlencode($Sender->SelfUrl),
-						'',
-						array('title' => $BookmarkAction)
-					),
-				'span',
-				array('class' => 'StatsBox FollowsBox'));
-			}
-			else {
-				$String .= Wrap(
-					Wrap(T('Follows')) . $Discussion->CountBookmarks,
-					'span',
-					array('class' => 'StatsBox FollowsBox'));
-			}
-		}
-		
-		echo $String;
-	}
-	
-	public function CategoriesController_Render_Before($Sender) {
-		$this->AddResources($Sender);
-	}
-	
-	public function DiscussionsController_Render_Before($Sender) {
-		$this->AddResources($Sender);
-	}
-	
-	public function CategoriesController_BeforeDiscussionContent_Handler($Sender) {
-		$this->RenderStatsBox($Sender);
-	}
-	
-	public function DiscussionsController_BeforeDiscussionContent_Handler($Sender) {
-		$this->RenderStatsBox($Sender);
-	}
-	
-	public function SettingsController_StatsBox_Create($Sender) {
-		$Sender->Permission('Garden.Settings.Manage');
+  private function RenderStatsBox($Sender) {
+    $Discussion = GetValue('Discussion', $Sender->EventArguments);
+    $String = '';
 
-		$Validation = new Gdn_Validation();
-		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
-		$ConfigurationModel->SetField(array(
-			'Plugins.StatsBox.HideComments',
-			'Plugins.StatsBox.HideViews',
-			'Plugins.StatsBox.HideFollows',
-			'Plugins.StatsBox.DisableCSS',
-			));
-		$Sender->Form->SetModel($ConfigurationModel);
+    if(C('Plugins.StatsBox.HideComments', FALSE) == FALSE) {
+      $String .= Wrap(
+              Wrap(T('Comments')) . Gdn_Format::BigNumber($Discussion->CountComments), 'span', array('class' => 'StatsBox AnswersBox'));
+    }
 
-		if ($Sender->Form->AuthenticatedPostBack() === FALSE) {
-			$Sender->Form->SetData($ConfigurationModel->Data);
-		} else {
-        	$Data = $Sender->Form->FormValues();
-			if ($Sender->Form->Save() !== FALSE) {
-        		$Sender->InformMessage('<span class="InformSprite Sliders"></span>'.T("Your changes have been saved."),'HasSprite');
-			}
-		}
-		
-		$Sender->AddSideMenu();
-		$Sender->Render($this->GetView('settings.php'));
-	}
-	
-	public function Base_GetAppSettingsMenuItems_Handler($Sender) {
-		$Menu = &$Sender->EventArguments['SideMenu'];
-		$Menu->AddLink('Add-ons', 'Stats Box', 'settings/statsbox', 'Garden.Settings.Manage');
-	}
-	
-	public function OnDisable() {}
+    if(C('Plugins.StatsBox.HideViews', FALSE) == FALSE) {
+      $String .= Wrap(
+              Wrap(T('Views')) . Gdn_Format::BigNumber($Discussion->CountViews), 'span', array('class' => 'StatsBox ViewsBox'));
+    }
 
-	public function Setup() {}
+
+    if(C('Plugins.StatsBox.HideFollows', FALSE) == FALSE) {
+      if(!is_numeric($Discussion->CountBookmarks)) {
+        $Discussion->CountBookmarks = 0;
+      }
+      $BookmarkAction = T($Discussion->Bookmarked == '1' ? 'Unbookmark' : 'Bookmark');
+      $Session = Gdn::Session();
+      if($Session->IsValid()) {
+        $String .= Wrap(
+                Anchor(
+                        Wrap(T('Follows')) . Gdn_Format::BigNumber($Discussion->CountBookmarks), '/vanilla/discussion/bookmark/' . $Discussion->DiscussionID . '/' . $Session->TransientKey() . '?Target=' . urlencode($Sender->SelfUrl), '', array('title' => $BookmarkAction)
+                ), 'span', array('class' => 'StatsBox FollowsBox'));
+      }
+      else {
+        $String .= Wrap(
+                Wrap(T('Follows')) . $Discussion->CountBookmarks, 'span', array('class' => 'StatsBox FollowsBox'));
+      }
+    }
+
+    echo $String;
+  }
+
+  public function CategoriesController_Render_Before($Sender) {
+    $this->AddResources($Sender);
+  }
+
+  public function DiscussionsController_Render_Before($Sender) {
+    $this->AddResources($Sender);
+  }
+
+  public function CategoriesController_BeforeDiscussionContent_Handler($Sender) {
+    $this->RenderStatsBox($Sender);
+  }
+
+  public function DiscussionsController_BeforeDiscussionContent_Handler($Sender) {
+    $this->RenderStatsBox($Sender);
+  }
+
+  public function SettingsController_StatsBox_Create($Sender) {
+    $Sender->Permission('Garden.Settings.Manage');
+    $this->AddResources($Sender);
+
+    $Validation = new Gdn_Validation();
+    $ConfigurationModel = new Gdn_ConfigurationModel($Validation);
+    $ConfigurationModel->SetField(array(
+        'Plugins.StatsBox.HideComments',
+        'Plugins.StatsBox.HideViews',
+        'Plugins.StatsBox.HideFollows',
+        'Plugins.StatsBox.DisableCSS',
+    ));
+    $Sender->Form->SetModel($ConfigurationModel);
+
+    if($Sender->Form->AuthenticatedPostBack() === FALSE) {
+      $Sender->Form->SetData($ConfigurationModel->Data);
+    }
+    else {
+      $Data = $Sender->Form->FormValues();
+      if($Sender->Form->Save() !== FALSE) {
+        $Sender->InformMessage('<span class="InformSprite Sliders"></span>' . T("Your changes have been saved."), 'HasSprite');
+      }
+    }
+
+    $Sender->AddSideMenu();
+    $Sender->Render($this->GetView('settings.php'));
+  }
+
+  public function Base_GetAppSettingsMenuItems_Handler($Sender) {
+    $Menu = &$Sender->EventArguments['SideMenu'];
+    $Menu->AddLink('Add-ons', 'Stats Box', 'settings/statsbox', 'Garden.Settings.Manage');
+  }
+
+  public function OnDisable() {
+    
+  }
+
+  public function Setup() {
+    
+  }
+
 }

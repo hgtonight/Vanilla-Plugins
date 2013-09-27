@@ -13,19 +13,19 @@
 *	You should have received a copy of the GNU General Public License
 *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-$PluginInfo['TestingGround'] = array(
-	'Title' => 'Testing Ground',
-	'Description' => 'A skeleton plugin that adds its resources to every page, creates a settings page, and creates a stub minicontroller.',
-	'Version' => '0.1',
-	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
-	'RequiredTheme' => FALSE, 
-	'RequiredPlugins' => FALSE,
-	'SettingsUrl' => '/settings/testingground',
-	'SettingsPermission' => 'Garden.Settings.Manage',
-	'Author' => "Zachary Doll",
+$PluginInfo['TestingGround'] = array( // You put whatever you want to call your plugin folder as the key
+	'Name' => 'Testing Ground', // User friendly name, this is what will show up on the garden plugins page
+	'Description' => 'A skeleton plugin that adds its resources to every page, creates a settings page, and creates a stub minicontroller.', // This is also shown on the garden plugins page. Will be used as the first line of the description if uploaded to the official addons repository at vanillaforums.org/addons
+	'Version' => '0.1', // Anything can go here, but it is suggested that you use some type of naming convention; will appear on the garden vanilla plugins page
+	'RequiredApplications' => array('Vanilla' => '2.0.18.8'), // Can require multiple applications (e.g. Vanilla and Conversations)
+	'RequiredTheme' => FALSE, // Any prerequisite themes
+	'RequiredPlugins' => FALSE, // Any prerequisite plugins
+	'SettingsUrl' => '/settings/testingground', // A settings button linked to this URL will show up on the garden plugins page when enabled
+	'SettingsPermission' => 'Garden.Settings.Manage', // The permissions required to visit the settings page. Garden.Settings.Manage is suggested.
+	'Author' => 'Zachary Doll', // This will appear in the garden plugins page
 	'AuthorEmail' => 'hgtonight@daklutz.com',
 	'AuthorUrl' => 'http://www.daklutz.com',
-	'License' => 'GPLv3'
+	'License' => 'GPLv3' // Specify your license to prevent ambiguity
 );
 
 class TestingGround extends Gdn_Plugin {
