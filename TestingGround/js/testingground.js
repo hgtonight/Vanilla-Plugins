@@ -1,4 +1,4 @@
 /* Copyright 2013 Zachary Doll */
-$(function(){
+jQuery(document).ready(function($) {
 
 });
