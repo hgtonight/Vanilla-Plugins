@@ -1,0 +1,23 @@
+/* Copyright 2013 Zachary Doll */
+.Footer {
+  padding-top: 20px;
+}
+
+.Aside.Box form {
+  text-align: center;
+  padding: 20px;
+}
+
+#ResizeOverlay {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1 !important;
+  background-color: rgba(0,0,0,.3);
+}
+
+#ResizedImage {
+  z-index: 2;
+}
