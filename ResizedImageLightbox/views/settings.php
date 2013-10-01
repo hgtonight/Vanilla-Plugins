@@ -16,7 +16,7 @@
 ?>
 <div class="Header"><?php
   echo Wrap(T($this->Data['Title']), 'h1');
-  echo Wrap(T('No settings yet :D. Think of something? Request it on the official <a href="http://vanillaforums.org/discussions" target="_blank">Vanilla forums</a>.'), 'div', array('class' => 'Info'));
+  echo Wrap(T('No settings yet :D. Think of something? Request it on the <a href="http://vanillaforums.org/discussion/24981/feedback-for-resized-image-lightbox-ril">Resized Image Lightbox feedback thread</a> on the official <a href="http://vanillaforums.org/discussions" target="_blank">Vanilla forums</a>.'), 'div', array('class' => 'Info'));
   ?>
   <div class="Aside Box">
     <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
@@ -28,6 +28,6 @@
   </div>
   <?php
   echo Wrap('Find this plugin helpful? Want to support a freelance developer?<br/>Click the donate button to buy me a beer. :D', 'div', array('class' => 'Info'));
-  echo Wrap('Confused by something? Check out the feedback thread on the official <a href="http://vanillaforums.org/discussions" target="_blank">Vanilla forums</a>.', 'div', array('class' => 'Info'));
+  echo Wrap('Confused by something? Check out the <a href="http://vanillaforums.org/discussion/24981/feedback-for-resized-image-lightbox-ril">Resized Image Lightbox feedback thread</a> on the official <a href="http://vanillaforums.org/discussions" target="_blank">Vanilla forums</a>.', 'div', array('class' => 'Info'));
   ?>
 </div>
