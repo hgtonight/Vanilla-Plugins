@@ -54,7 +54,7 @@ ul.DataList div.Meta {
   z-index: 5;
 }
 
-div.Meta span.CommentCount {
+div.Meta span.CommentCount, .ItemContent .Meta .HasNew {
   display: none;
 }
 

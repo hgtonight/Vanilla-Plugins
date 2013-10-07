@@ -13,7 +13,7 @@
  * 	You should have received a copy of the GNU General Public License
  * 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-echo Wrap(T('Stats Box Settings'), 'h1');
+echo Wrap(T($this->Data['Title']), 'h1');
 
 echo $this->Form->Open();
 echo $this->Form->Errors();
@@ -22,9 +22,9 @@ echo Wrap(
         Wrap($this->Form->CheckBox('Plugins.StatsBox.HideFollows', T('Hide Follows Box')), 'li') .
         Wrap($this->Form->CheckBox('Plugins.StatsBox.HideViews', T('Hide Views Box')), 'li') .
         Wrap($this->Form->CheckBox('Plugins.StatsBox.HideComments', T('Hide Comments Box')), 'li') .
-        Wrap($this->Form->CheckBox('Plugins.StatsBox.DisableCSS', T('Disable Stats Box default style.')), 'li'), 'ul', array('class' => 'CheckBoxList'));
+        Wrap($this->Form->CheckBox('Plugins.StatsBox.DisableCSS', T('Disable Stats Box default style')), 'li'), 'ul', array('class' => 'CheckBoxList'));
 
-echo $this->Form->Close("Save");
+echo $this->Form->Close('Save');
 ?>
 <div class="Footer">
   <?php
