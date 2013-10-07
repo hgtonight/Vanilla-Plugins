@@ -20,7 +20,10 @@ $PluginInfo['TestingGround'] = array( // You put whatever you want to call your 
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'), // Can require multiple applications (e.g. Vanilla and Conversations)
 	'RequiredTheme' => FALSE, // Any prerequisite themes
 	'RequiredPlugins' => FALSE, // Any prerequisite plugins
-	'SettingsUrl' => '/settings/testingground', // A settings button linked to this URL will show up on the garden plugins page when enabled
+	'MobileFriendly' => FALSE, // Should this plugin be run on mobile devices?
+	'HasLocale' => TRUE, // Does this plugin have its own local file?
+	'RegisterPermissions' => FALSE, // E.g. array('Plugins.TestingGround.Manage') will register this permissions automatically on enable
+    'SettingsUrl' => '/settings/testingground', // A settings button linked to this URL will show up on the garden plugins page when enabled
 	'SettingsPermission' => 'Garden.Settings.Manage', // The permissions required to visit the settings page. Garden.Settings.Manage is suggested.
 	'Author' => 'Zachary Doll', // This will appear in the garden plugins page
 	'AuthorEmail' => 'hgtonight@daklutz.com',
@@ -35,8 +38,8 @@ class TestingGround extends Gdn_Plugin {
 		// add the admin side menu
 		$Sender->AddSideMenu('settings/testingground');
 		
-		$Sender->Title('Testing Ground Settings');
-		$Sender->Render($this->GetView("settings.php"));
+		$Sender->Title($this->GetPluginName() . ' ' . T('Settings'));
+		$Sender->Render($this->GetView('settings.php'));
 	}
 	
 	public function PluginController_TestingGround_Create($Sender) {
@@ -45,12 +48,14 @@ class TestingGround extends Gdn_Plugin {
 	}
 	
 	public function Controller_Index($Sender) {
-		echo 'I do not do anything yet :(';
+		echo T('Plugins.TestingGround.SadTruth');
+		echo "\nPlugin Index: " . $this->GetPluginIndex();
+		echo "\nPlugin Folder: " . $this->GetPluginFolder();
 	}
 	
 	public function Base_Render_Before($Sender) {
 		$this->_AddResources($Sender);
-		// echo '<pre>'; var_dump($Sender); echo '</pre>';
+		// decho($Sender)
 	}
 	
 	private function _AddResources($Sender) {
