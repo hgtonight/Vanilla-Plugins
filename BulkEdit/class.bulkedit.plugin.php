@@ -14,12 +14,15 @@
 *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 $PluginInfo['BulkEdit'] = array(
-	'Title' => 'Bulk Edit',
+	'Name' => 'Bulk Edit',
 	'Description' => 'Remove users, add/remove roles, set multiple roles, ban, and unban multiple users all from the Users dashboard.',
 	'Version' => '1.1',
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'RequiredTheme' => FALSE, 
 	'RequiredPlugins' => FALSE,
+	'MobileFriendly' => TRUE,
+	'HasLocale' => TRUE,
+	'RegisterPermissions' => FALSE,
 	'SettingsUrl' => '/plugin/bulkedit/settings',
 	'SettingsPermission' => 'Garden.Settings.Manage',
 	'Author' => "Zachary Doll",
