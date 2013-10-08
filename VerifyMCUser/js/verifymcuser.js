@@ -1,5 +1,7 @@
 /* Copyright 2013 Zachary Doll */
 jQuery(document).ready(function($) {
+  $('body.register input[type="submit"], #Register input[type="submit"]').attr('disabled', 'disabled');
+  
   $('#Register input[name$=Name], body.register input[name$=Name]').blur(function() {
     var name = $(this).val();
     if (name != '') {

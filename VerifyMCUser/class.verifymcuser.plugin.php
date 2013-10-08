@@ -16,7 +16,7 @@
 $PluginInfo['VerifyMCUser'] = array(
 	'Name' => 'Verify Minecraft Username',
 	'Description' => 'Verifies usernames are premium minecraft usernames during registration. A special thanks to gabessdsp at vanillaforums.org for sponsoring this plugin.',
-	'Version' => '1.0',
+	'Version' => '1.1',
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'RequiredTheme' => FALSE,
 	'RequiredPlugins' => FALSE,
@@ -52,8 +52,10 @@ class VerifyMCUser extends Gdn_Plugin {
     public function EntryController_RegisterValidation_Handler($Sender) {
       $FormPostValues = $Sender->Request->Post();
       $Username = $FormPostValues['Name'];
-      if(file_get_contents('http://minecraft.net/haspaid.jsp?user=' . $Username)) {
-        throw NotFoundException('That Minecraft username was');
+      if(file_get_contents('http://minecraft.net/haspaid.jsp?user=' . $Username) == 'false') {
+        $Sender->Form->AddError('Please enter a valid Minecraft username.');
+        $Sender->Render();
+        exit();
       }
     }
     
