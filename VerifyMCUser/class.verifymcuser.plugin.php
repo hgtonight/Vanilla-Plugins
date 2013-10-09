@@ -16,7 +16,7 @@
 $PluginInfo['VerifyMCUser'] = array(
 	'Name' => 'Verify Minecraft Username',
 	'Description' => 'Verifies usernames are premium minecraft usernames during registration. A special thanks to gabessdsp at vanillaforums.org for sponsoring this plugin.',
-	'Version' => '1.1',
+	'Version' => '1.1.1',
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'RequiredTheme' => FALSE,
 	'RequiredPlugins' => FALSE,
