@@ -15,10 +15,10 @@
 */
 $PluginInfo['SteamSignIn'] = array(
 	'Name' => 'Steam Sign In',
-   'Description' => 'This plugin allows users to sign in with their Steam™ accounts. Based on Google Sign In by Todd Burry (todd@vanillaforums.com) and Powered by Steam (http://steampowered.com).',
+   'Description' => 'This plugin allows users to sign in with their Steamâ„¢ accounts. Based on Google Sign In by Todd Burry (todd@vanillaforums.com) and Powered by Steam (http://steampowered.com).',
    'Version' => '1.0',
    'RequiredApplications' => array('Vanilla' => '2.0.14'),
-   'RequiredPlugins' => array('OpenID' => '0.1a'),
+   'RequiredPlugins' => array('OpenID' => '0.2'),
    'RequiredTheme' => FALSE,
    'MobileFriendly' => TRUE,
    'SettingsPermission' => 'Garden.Settings.Manage',
@@ -62,7 +62,7 @@ class SteamSignInPlugin extends Gdn_Plugin {
 	public function EntryController_SignIn_Handler($Sender, $Args) {
 		if (isset($Sender->Data['Methods'])) {
 			$ImgSrc = Asset('/plugins/SteamSignIn/design/steam-signin.png');
-			$ImgAlt = T('Sign In with Steam™');
+			$ImgAlt = T('Sign In with Steamâ„¢');
 			$SigninHref = $this->_AuthorizeHref();
 			$PopupSigninHref = $this->_AuthorizeHref(TRUE);
 

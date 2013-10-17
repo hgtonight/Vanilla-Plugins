@@ -10,7 +10,7 @@ Prerequisites
 =============
 OpenID 0.1a must be enabled. It doesn't have to be enabled as a sign in provider however.
 
-You must modify the original code per this discussion: [http://vanillaforums.org/discussion/comment/170123/#Comment_170123].
+You must modify the original code per this discussion: [http://vanillaforums.org/discussion/comment/170123/#Comment_170123](http://vanillaforums.org/discussion/comment/170123/#Comment_170123).
 
 Install
 =======
