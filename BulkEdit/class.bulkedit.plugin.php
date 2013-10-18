@@ -15,8 +15,8 @@
 */
 $PluginInfo['BulkEdit'] = array(
 	'Name' => 'Bulk Edit',
-	'Description' => 'Remove users, add/remove roles, set multiple roles, ban, and unban multiple users all from the Users dashboard.',
-	'Version' => '1.1',
+	'Description' => 'Remove users, add/remove roles, set multiple roles, ban/unban, and verify multiple users all from the Users dashboard.',
+	'Version' => '1.2',
 	'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
 	'RequiredTheme' => FALSE, 
 	'RequiredPlugins' => FALSE,
@@ -68,6 +68,14 @@ class BulkEdit extends Gdn_Plugin {
 	public function UserController_Render_Before($Sender) {
 		$Sender->AddJsFile($this->GetResource('js/bulkedit.js', FALSE, FALSE));
 		$Sender->AddCssFile($this->GetResource('design/bulkedit.css', FALSE, FALSE));
+        
+        if(version_compare(APPLICATION_VERSION, '2.0', '>')) {
+          $Tools = '<select name="BulkEditDropDownAction" id="BulkEditDropDown"><option value="0">With Checked Users...</option><option value="remove">Remove Users...</option><option value="role/add">Add Role to Users...</option><option value="role/remove">Remove Role from Users...</option><option value="role/set">Set roles for Users...</option><option value="ban">Ban Users...</option><option value="ban/unban">Unban Users...</option><option value="verify">Verify Users...</option><option value="verify/unverify">Unverify Users...</option></select>';
+        }
+        else {
+          $Tools = '<select name="BulkEditDropDownAction" id="BulkEditDropDown"><option value="0">With Checked Users...</option><option value="remove">Remove Users...</option><option value="role/add">Add Role to Users...</option><option value="role/remove">Remove Role from Users...</option><option value="role/set">Set roles for Users...</option><option value="ban">Ban Users...</option><option value="ban/unban">Unban Users...</option></select>';
+        }
+        $Sender->AddDefinition('BulkEditTools', $Tools);
 	}
 	
 	public function Controller_Remove($Sender) {
@@ -132,7 +140,7 @@ class BulkEdit extends Gdn_Plugin {
 			FALSE
 		);
 		
-		// Figure out if we are setting, removing, or adding roles
+		// Figure out if we are banning or unbanning
 		$Method = strtolower($Sender->RequestArgs[1]);
 		
 		if($Method == 'unban') {
@@ -187,6 +195,71 @@ class BulkEdit extends Gdn_Plugin {
 		}
 		
 		$Sender->Render($this->GetView('ban.php'));
+	}
+    
+    public function Controller_Verify($Sender) {
+		$Sender->Permission(
+			array(
+				'Garden.Moderation.Manage'
+			),
+			'',
+			FALSE
+		);
+		
+		// Figure out if we are verifying or unverifying
+		$Method = strtolower($Sender->RequestArgs[1]);
+		
+		if($Method == 'unverify') {
+			$Sender->Title('Bulk Unverify Users');
+			$VerifyAction = 0;
+		}
+		else {
+			$Sender->Title('Bulk Verify Users');
+			$Method = 'verify';
+			$VerifyAction = 1;
+		}
+
+		$Sender->BulkEditAction = $Method;
+		
+		$Sender->Form = new Gdn_Form();
+		$Validation = new Gdn_Validation();
+		$ConfigurationModel = new Gdn_ConfigurationModel($Validation);
+		
+		$ConfigurationModel->SetField('Plugins.BulkEdit.UserIDs');
+		
+		$Sender->Form->SetModel($ConfigurationModel);
+		
+		if ($Sender->Form->AuthenticatedPostBack() === FALSE) {
+			// First time viewing
+			$Sender->Form->SetData($ConfigurationModel->Data);
+			
+			$this->_AddInjectedUserIDsProperly($Sender);
+		} else {
+			// Form submission handling
+			$ConfigurationModel->Validation->ApplyRule('Plugins.BulkEdit.UserIDs', 'Required');
+        	
+			$Data = $Sender->Form->FormValues();
+			$UserIDs = json_decode($Data['Plugins.BulkEdit.UserIDs']);
+			
+			// Need to have these in case the there is a validation error
+			$UserModel = new UserModel();
+			$Sender->BulkEditUsers = $UserModel->GetIDs($UserIDs);
+			$Sender->Form->AddHidden('Plugins.BulkEdit.UserIDs', $Data['Plugins.BulkEdit.UserIDs'], TRUE);
+			
+			if ($Sender->Form->Save() !== FALSE) {
+				$Users = $UserModel->GetIDs($UserIDs);
+				// Store so we can display them
+        		$Sender->BulkEditUsers = $Users;
+				
+				foreach ($Users as $User) {
+					$UserModel->SetField($User['UserID'], 'Verified', $VerifyAction);
+				}
+				$Sender->StatusMessage = ($VerifyAction) ? T('Users have been verified!') : T('Users have been unverified!');
+				$Sender->BulkEditActionComplete = TRUE;
+			}
+		}
+		
+		$Sender->Render($this->GetView('verify.php'));
 	}
 	
 	public function Controller_Role($Sender) {

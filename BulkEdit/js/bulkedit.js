@@ -1,6 +1,6 @@
 /* Copyright 2013 Zachary Doll */
 $(function(){
-	var DropDownString = '<select name="BulkEditDropDownAction" id="BulkEditDropDown"><option value="0">With Checked Users...</option><option value="remove">Remove Users...</option><option value="role/add">Add Role to Users...</option><option value="role/remove">Remove Role from Users...</option><option value="role/set">Set roles for Users...</option><option value="ban">Ban Users...</option><option value="ban/unban">Unban Users...</option></select>';
+	var DropDownString = gdn.definition('BulkEditTools');
 	// Add dropdown in 2.0.18.8+
 	$('.FilterMenu').append(DropDownString);
 	
