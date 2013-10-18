@@ -21,7 +21,7 @@ $PluginInfo['BulkEdit'] = array(
     'RequiredTheme' => FALSE,
     'RequiredPlugins' => FALSE,
     'MobileFriendly' => TRUE,
-    'HasLocale' => FALSE,
+    'HasLocale' => TRUE,
     'RegisterPermissions' => FALSE,
     'SettingsUrl' => '/plugin/bulkedit/settings',
     'SettingsPermission' => 'Garden.Settings.Manage',
@@ -46,6 +46,7 @@ class BulkEdit extends Gdn_Plugin {
   }
 
   public function Controller_Settings($Sender) {
+    $Sender->AddCssFile($this->GetResource('design/bulkedit.css', FALSE, FALSE));
     $Sender->PluginDescription = 'Remove users, add/remove roles, set multiple roles, ban/unban, and verify multiple users all from the Users dashboard.';
     $Sender->Title('Bulk Edit Settings');
     $Sender->Render($this->GetView('settings.php'));
