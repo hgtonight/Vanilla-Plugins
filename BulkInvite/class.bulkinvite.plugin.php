@@ -16,7 +16,7 @@
 $PluginInfo['BulkInvite'] = array(
     'Title' => 'Bulk Invite',
     'Description' => 'A plugin in that provides an interface to invite users in bulk. It optionally sends an invitation registration code.',
-    'Version' => '1.2.1',
+    'Version' => '1.2.2',
     'RequiredApplications' => array('Vanilla' => '2.0.18.8'),
     'HasLocale' => TRUE,
     'RequiredTheme' => FALSE,
@@ -107,7 +107,7 @@ class BulkInvite extends Gdn_Plugin {
               $InviteCode = $this->CreateInvite($Sender, $Recipient);
               if($InviteCode == FALSE) {
                 $Email->Clear();
-                break;
+                continue;
               }
               $Email->Message($Message . "\n\n" . ExternalUrl("entry/register/{$InviteCode}"));
 
