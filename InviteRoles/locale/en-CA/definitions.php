@@ -1,4 +1,3 @@
 <?php if (!defined('APPLICATION')) exit();
 /* Copyright 2013 Zachary Doll */
-// Add any plugin specific locale definitions here to make life easier for translators
-$Definition['Plugins.TestingGround.SadTruth'] = 'I do not do anything yet :(';
+$Definition['Plugin.InviteRoles.RoleSelectionLabel'] = 'Please select which roles should be added to users registering with an invite code.';
