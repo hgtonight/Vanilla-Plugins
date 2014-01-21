@@ -1,0 +1,19 @@
+/* Root categories with sub categories hidden*/
+ul.PanelCategories li.Leader, ul.PanelCategories li.Leader.Active {
+	padding-left: 20px;
+	background-image: url('arrow.png');
+	background-repeat: no-repeat;
+	background-position: 8px center;
+}
+
+/* Root categories with sub categories expanded */
+ul.PanelCategories li.Leader.Expanded, ul.PanelCategories li.Leader.Active.Expanded {
+	background-image: url('arrow-down.png');
+	background-repeat: no-repeat;
+	background-position: 6px center;
+}
+
+/* This makes it feel a little more polished */
+ul.PanelCategories li.Heading {
+	cursor: default;
+}
