@@ -1,3 +1,7 @@
+NOTE
+====
+All my plugins have moved to my [Vanilla addons repository](http://www.github.com/hgtonight/Vanilla-Addons). This repo will remain untouched.
+
 Vanilla-Plugins
 ===============
 This is a one stop repo shop for my Vanilla 2 Forums plugins. Not all are guaranteed to work. Be sure to check out the individual repos for issues or pull requests.
