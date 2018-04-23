@@ -28,7 +28,7 @@ $PluginInfo['LatestPostList'] = array(
    'License' => 'GPLv3'
 );
 
-class LatestPostList extends Gdn_Plugin {
+class LatestPostListPlugin extends Gdn_Plugin {
 
 	// runs once every page load
 	public function __construct() {
